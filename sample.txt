@@ -1,0 +1,31 @@
+createfile
+TextF.t
+Hello There
+createdir
+first
+createfile
+second.t
+Checking to see if it works
+createfile
+prog.p
+4
+6
+enddir
+createfile
+another.p
+7
+8
+createfile
+text2.t
+so many files
+createdir
+second
+createdir
+programs
+createfile
+bigprog.p
+10
+15
+enddir
+quit
+
