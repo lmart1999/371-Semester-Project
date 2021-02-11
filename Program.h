@@ -1,3 +1,10 @@
+/*Creates the Program Object
+Purpose: to create a program object and store its relevant information memory requirements, cpu requirements, and name
+Constructor requires all parameters to be input
+Output: none
+Called by: RUFS.cpp createProgramFile
+
+*/
 #ifndef PROGRAM
 #define PROGRAM
 #include <iostream>

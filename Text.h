@@ -1,3 +1,10 @@
+/*Creates the Text Object
+Purpose: to create a text object and store its relevant information such as contents, name, and to calculate and store its size
+Constructor requires name and contents
+Output: none
+Called by: RUFS.cpp createTextFile
+
+*/
 #ifndef TEXT
 #define TEXT
 #include <iostream>
