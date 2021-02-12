@@ -64,3 +64,8 @@ The file operates with 4 commands
 -Quit - closes all open directories and reads all information from the binary file
 
 None of these are case sensitive commands, names are validated upon entering as are commands, if either is invalid you will be prompted to reenter them.
+
+
+Future Improvements:
+Make a disk manager class to handle reading and writing
+Make another class for User interacton

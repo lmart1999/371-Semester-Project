@@ -1,0 +1,90 @@
+/*Creates the DiskManager Object
+Purpose: To manage the reading, writing and navigating of the binary file
+Constructor requires name of file to be built
+Output: the completed file
+Called by: RUFS.cpp main
+
+*/
+#ifndef DISKMANAGER
+#define DISKMANAGER
+#include <iostream>
+#include <bits/stdc++.h>
+#include "Text.h"
+#include "Program.h"
+#include "Directory.h"
+#include <fstream>
+#include <string>
+using namespace std;
+class DiskManager {
+	
+	//variables
+	private:
+	char* name;
+	fstream file;
+
+	
+	public:
+	
+	//full constructor
+	DiskManager(char* s);
+	/*
+	Purpose: to initialize the file that will be used for all read write operations
+	Called by the constructor
+	*/
+	void createFile();
+	/*
+	Purpose: checks the extension of the entered filename to determine the type of file to be read
+	input: a filename	
+	output: a int declaring the type of file
+	calledby: reader
+	*/
+	int checkExtensionR(string fileName);
+	
+	/*
+	Purpose: to write the most recently created text file to the binary file
+	output: none
+	input: text file, fstream pointer
+	called by:createTextFile
+	*/
+	void writeTextF(Text input);
+	/*
+	Purpose: to write the most recently created Program file to the binary file
+	output: none
+	input: text file, fstream pointer
+	calledby: createProgramFile
+	*/
+	void writeProgramF( Program input);
+	/*
+	Purpose: to write the most recently created Program file to the binary file
+	output: none
+	input: text file, fstream pointer
+	called by: main
+	*/
+	void writeEndDirectoryF(Directory input);
+	/*
+	Purpose: to write the most recently created Program file to the binary file
+	output: none
+	input: text file, fstream pointer
+	called by : createDirectory
+	*/
+	int writeDirectoryF(Directory input);
+	/*
+	Purpose: to read all input into the binary file thus far
+	Input: an fstream pointer to the open file
+	Output: the contents of the file to the console
+	calls: checkExtensionR
+	called by: main
+	*/
+	void reader();
+	//determines size of contents
+	void findSize();
+	
+	//getters and setters
+	void setName(char* n);
+	char* getName();
+	
+		
+	
+};
+
+#endif

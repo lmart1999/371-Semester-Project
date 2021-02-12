@@ -19,90 +19,17 @@ Basic Algorithm: creates file to write too
 Programmer: Luke Martin
 */
 #include <stack>
-#include <fstream>
 #include <iostream>
 #include <bits/stdc++.h>
 #include <string>
 #include "Text.h"
 #include "Program.h"
 #include "Directory.h"
+#include "DiskManager.h"
 
 using namespace std;
 
-/*
-Purpose: to write the most recently created text file to the binary file
-output: none
-input: text file, fstream pointer
-called by:createTextFile
-*/
 
-void writeTextF(fstream& file, Text input) {
-	string name = input.getName(); //saves file name as a string
-	string contents = input.getContents(); // saves file contents
-	int size= input.getSize(); // gets size of contents
-	file.write(name.c_str(), 11); // writes file name to binay file
-	file.write((char*)&size, sizeof(size)); // writes content size to binary file
-	file.write(contents.c_str(), size); // writes content to binary file
-}
-/*
-Purpose: to write the most recently created Program file to the binary file
-output: none
-input: text file, fstream pointer
-calledby: createProgramFile
-
-*/
-
-void writeProgramF(fstream& file, Program input) {
-	string name = input.getName();
-	//cout << name<< endl;
-	int cpuReq = input.getCpuReq();
-	int memReq= input.getMemReq();
-	file.write(name.c_str(), 11); // writes file name to binary
-	file.write((char*)&cpuReq, sizeof(cpuReq)); //writes cpuReq to binayr file
-	file.write((char*)&memReq, sizeof(memReq)); //writes mem req to binary file
-	
-}
-
-/*
-Purpose: to write the most recently created Program file to the binary file
-output: none
-input: text file, fstream pointer
-called by : createDirectory
-
-*/
-
-void writeDirectoryF(fstream& file, Directory input) {
-	string name = input.getName();
-	//cout << name<< endl;
-	int numObj = input.getNumObj();
-	//int memLoc= input.getMemLoc();
-	file.write(name.c_str(), 11); // writes file name to binary
-	file.write((char*)&numObj, sizeof(numObj)); //writes number of Objecs to binary file
-	//file.write((char*)&memLoc, sizeof(memLoc)); //writes mem req to binary file
-	
-}
-
-/*
-Purpose: to write the most recently created Program file to the binary file
-output: none
-input: text file, fstream pointer
-called by: main
-*/
-
-void writeEndDirectoryF(fstream& file, Directory input) {
-	string name = input.getName();
-	
-	int numObj = input.getNumObj(); //retrieves number of objects in directory to be ended
-	int memLoc= input.getMemLoc(); // retrieves memory location of start of directory
-	memLoc = memLoc+11; //udjust memeory location for location for number of OBJ
-	file.seekg(memLoc, ios::beg ); // seeks to the memory location 
-	file.write((char*)&numObj, sizeof(numObj));//writes number of Objecs to binary file
-	file.seekg(0, ios::end); //seeks to end of file
-	name = "END" + name; // adds END to beggining of Directory name
-	file.write(name.c_str(), 14); // writes file name to binary
-	
-	
-}
 
 
 /*
@@ -113,13 +40,13 @@ called by: createFileName
 calls: Text and writes the file to the binary file
 
 */
-void createTextFile(string fileName, fstream& file) {
+void createTextFile(string fileName, DiskManager& dm) {
 	string contents;
 	cout << "Enter Text: ";
 	cin.ignore();
 	getline(cin, contents);
 	Text text(fileName, contents);
-	writeTextF(file, text);
+	dm.writeTextF(text);
 	return;
 }
 /*
@@ -130,7 +57,7 @@ called by: createFileName
 calls: Program and writes the file to the binary file by calling writeProgramF
 
 */
-void createProgramFile(string fileName, fstream &file ) {
+void createProgramFile(string fileName, DiskManager &dm ) {
 	int cpuReq;
 	cout << "Enter CPU requirements: ";
 	cin >> cpuReq;
@@ -138,7 +65,7 @@ void createProgramFile(string fileName, fstream &file ) {
 	cout << "Enter Memory Requirements: ";
 	cin >> memReq;
 	Program program(fileName, cpuReq, memReq);
-	writeProgramF(file, program);
+	dm.writeProgramF(program);
 	return;
 }
 
@@ -209,7 +136,7 @@ output: none
 calls: checkExtension, checkString, namePadder, createProgramFile, createTextFile
 called by: main
 */
-void createFileName(fstream &file) {
+void createFileName(DiskManager &dm) {
 	cout <<"Enter File Name: ";
 	std::string fileName;
 	cin >> fileName;
@@ -258,9 +185,9 @@ void createFileName(fstream &file) {
 	//pads shorter filenames with null characters before the extension
 	fileName =namePadder(fileName);
 	if(fileType==1) {
-		createTextFile(fileName, file);
+		createTextFile(fileName, dm);
 	}else if (fileType==2) {
-		createProgramFile(fileName, file);
+		createProgramFile(fileName, dm);
 	}
 	
 	return;
@@ -316,124 +243,17 @@ string createDirName() {
 * Returns a Directory
 */
 
-Directory createDirectory(int curLoc, fstream & file) {
+Directory createDirectory( DiskManager &dm) {
 	string dirName =createDirName();
-	Directory temp = Directory(dirName, 0, file.tellg());
-	writeDirectoryF(file, temp);
+	Directory temp = Directory(dirName, 0, 0);
+	int curLoc = dm.writeDirectoryF(temp);
+	temp.setMemLoc(curLoc);
 	return temp;	
 }
 
-/*
-Purpose: checks the extension of the entered filename to determine the type of file to be read
-input: a filename
-output: a int declaring the type of file
-calledby: reader
-*/
 
 
-int checkExtensionR(std::string fileName) {
-	// retrieves the files extenstionclea
-	string extension = fileName.substr(((fileName.length())-2), 2);
-	
-	if(extension ==".t") {
-		return 1;
-	}else if (extension==".p") {
-		return 2;
-	}else if (extension==".d") {
-		return 3;
-	}else {
-		return 4;
-	}
-}
 
-
-/*
-Purpose: to read all input into the binary file thus far
-Input: an fstream pointer to the open file
-Output: the contents of the file to the console
-calls: checkExtensionR
-called by: main
-*/
-void reader(fstream &file) {
-	file.seekg(0, ios::beg);
-	int numO = 0;
-	
-	cout <<"\n";
-	while(!file.eof()){
-		cout<< file.tellg() << ": " ;
-	
-		char stringChar;
-        string name = "";
-		
-        for (int j =0; j<11; j++){
-            file.read((char*)&stringChar, sizeof(char));
-            name = name + stringChar;
-        }
-		
-		
-		int fileType = checkExtensionR(name);
-		
-		if( fileType ==4) {
-			for (int j =0; j<3; j++){
-				file.read((char*)&stringChar, sizeof(char));
-				name = name + stringChar;
-			}
-		}
-		
-		
-		if(fileType ==1) {
-			cout << "	"<< name << endl;
-			cout << "	Type:	Text" << endl;
-			cout<< file.tellg() ; //tells current memlocation
-			int size = 0; // to store size of text file contents
-
-			file.read((char*)&size, sizeof(size)); // reads in size of text file contents
-			cout << ": Size of Text File:	" <<size << " byte"<< endl;  //tells size
-			string contents = ""; //holder string
-			cout<< file.tellg() << ": " ;
-
-			//for loop that reads in the contents of the text file
-			for (int j =0; j<size; j++){
-				file.read((char*)&stringChar, sizeof(char));
-				contents = contents + stringChar;
-			}
-		cout << "Contents of text file:	"<< contents <<  endl;
-	
-		
-		}else if(fileType ==2) {
-			cout << "	Filename:"<< name << endl;
-			int cReq = 0;
-			int mReq = 0;
-			cout << "	Type: Program" << endl;
-			cout<< file.tellg() << ": " ; //tells current memory location
-			file.read((char*)&cReq, sizeof(cReq)); // reads in CPU req of text file contents
-			file.read((char*)&mReq, sizeof(mReq)); // reads in memory req of text file contents
-			cout << " Contents: CPU Requirement:\t " << cReq << ", Memory Requirement " << mReq << endl; // prints out data of file
-		
-		}else if(fileType ==3) {
-			cout << "Directory:"<< name << endl;
-			int numO = 0;
-			//cout << "	Type: Directory" << endl;
-			cout<< file.tellg() << ": " ; //tells current memory location
-			file.read((char*)&numO, sizeof(numO)); // reads in number of Objects of text file contents
-			cout << "Directory " << name << " contains " << numO << " file/directory" << endl; // prints out data of Directory
-		
-		}else {
-		    cout<< "End of Directory " << name.substr(3,11) << endl;
-			//ends if final directory is ended
-			char test;
-			file.read((char*)&test, sizeof(test));			
-			if (file.eof()) {
-				return;
-			}else{
-				file.seekg(-1, ios::cur);
-			}
-			
-		}
-		
-	}
-	
-}
 /*
 Purpose: to create initial directory and file to write to as well as to manage the directory stack
 	and call all necessary functions as determined by user input at the menu
@@ -446,26 +266,17 @@ return type: int
 
 int main(int argc, char** argv)
 {
-	fstream file;
 	if(argv[1] ==NULL) {
 		argv[1] = "RUFS.txt";
 	}
 	//if file for argv already exists removes it so overwriting doesnt cause issues
 	remove ( argv[1] );
-	//opens and closes the binary file, allows us to overrwrite just first entries of file rather than whole file/ creates file if not existent
-    file.open(argv[1], ios::binary | ios::out | ios::in | ios::app );
-    file.close();
-	//opens file to edit it
-	file.open(argv[1], ios::binary | ios::out | ios::in );
-	//creates pointers to keep track of location in file system
-	streampos begin,end,pos;
-	//location of start of file
-    begin=file.tellg();
-	//tells location of end of file
-    file.seekg(0,ios::end);
-    end =file.tellg();
-	//returns pointer to beggining
-    file.seekg(0, ios::beg);
+	
+	DiskManager diskManager(argv[1]);
+	
+	
+	
+	
 	//variable that will be used to temporarily hold input data before putting it into the file
 	string command;
 	
@@ -473,7 +284,7 @@ int main(int argc, char** argv)
 	// initializes the root directory and writes it to the binary file
 	string rootDir = namePadder("root.d");
 	Directory root = Directory(rootDir, 0, 0);
-	writeDirectoryF(file, root);
+	diskManager.writeDirectoryF(root);
 	directories.push(root);
 	
 	//Intorduction to the Program
@@ -492,7 +303,7 @@ int main(int argc, char** argv)
 		//Executes the createDir command
 		if (command == "createdir") {
 			//calls the create directoy file to make a new properly named and formatted directory object to add to the stack
-			Directory temp =createDirectory(file.tellg(), file);
+			Directory temp =createDirectory( diskManager); 
 			//pulls top directory off, adds one to its num of programs and replaces it on the stack
 			Directory mod = directories.top();
 			mod.setNumObj(mod.getNumObj()+1);
@@ -502,7 +313,7 @@ int main(int argc, char** argv)
 			directories.push(temp);
 			//Executes the CreateFile command
 		}else if (command == "createfile") {
-			createFileName(file); //creates and writes a text or program file to the binary file
+			createFileName(diskManager); //creates and writes a text or program file to the binary file
 			
 			//pulls top directory off, adds one to its num of programs and replaces it on the stack
 			Directory mod = directories.top();
@@ -513,9 +324,9 @@ int main(int argc, char** argv)
 			//Executes the EndDir Command
 		}else if (command == "enddir") {
 			Directory end = directories.top();
-			writeEndDirectoryF(file, end);
+			diskManager.writeEndDirectoryF(end);
 			directories.pop();
-			file.seekg(0,ios::end);
+			//file.seekg(0,ios::end);
 			if(directories.empty()) {
 				break;
 			}
@@ -533,14 +344,13 @@ int main(int argc, char** argv)
 // ends all currently open directories
 	while(!directories.empty()) {
 		Directory end = directories.top();
-		writeEndDirectoryF(file, end);
+		diskManager.writeEndDirectoryF(end);
 		directories.pop();
-		file.seekg(0,ios::end);
 	
 	}
 	
-	reader(file);
+	diskManager.reader();
 
-	file.close();
+	//file.close();
 	return 0;
 }
