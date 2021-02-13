@@ -9,11 +9,13 @@ Called by: RUFS.cpp main
 #define DISKMANAGER
 #include <iostream>
 #include <bits/stdc++.h>
+#include <fstream>
+#include <string>
 #include "Text.h"
 #include "Program.h"
 #include "Directory.h"
-#include <fstream>
-#include <string>
+
+
 using namespace std;
 class DiskManager {
 	
@@ -27,6 +29,9 @@ class DiskManager {
 	
 	//full constructor
 	DiskManager(char* s);
+	
+	DiskManager();
+
 	/*
 	Purpose: to initialize the file that will be used for all read write operations
 	Called by the constructor

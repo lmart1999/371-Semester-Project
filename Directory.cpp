@@ -1,5 +1,7 @@
 #include <iostream>
 #include "Directory.h"
+#include "UserInterface.h"
+
 using namespace std;
 
 	//Full constructor

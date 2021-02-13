@@ -19,7 +19,11 @@ using namespace std;
 		createFile();
 		
 	}
-	
+	//Full Constructor
+	DiskManager::DiskManager() {
+		//createFile();
+		
+	}
 	void DiskManager::createFile() {
 		
 		//fstream file;

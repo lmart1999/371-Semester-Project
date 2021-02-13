@@ -9,7 +9,10 @@ Called by: RUFS.cpp createTextFile
 #define TEXT
 #include <iostream>
 #include <string>
+
+
 using namespace std;
+
 class Text {
 	
 	//variables
@@ -23,12 +26,13 @@ class Text {
 	//full constructor
 	Text(string n, int s , string c);
 	
-	//constructor without size, calls findSize function, primary constructor
+	//constructor without size, calls findSize function
 	Text(string n, string c);
 	
 	//determines size of contents
 	void findSize();
 	
+
 	//getters and setters
 	void setName(string n);
 	string getName();

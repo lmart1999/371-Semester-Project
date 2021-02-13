@@ -1,5 +1,8 @@
 #include <iostream>
 #include "Text.h"
+
+
+
 using namespace std;
 
 	//Full Constructor
@@ -21,7 +24,8 @@ using namespace std;
 		size = contents.length();
 		
 	}
-	
+
+
 	// Getters and setters
 	void Text::setName(string n) {
 		name = n;

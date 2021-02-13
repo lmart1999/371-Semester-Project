@@ -1,5 +1,7 @@
 #include <iostream>
 #include "Program.h"
+
+
 using namespace std;
 
 
@@ -8,6 +10,8 @@ using namespace std;
 		cpuReq = c;
 		memReq = m;
 	}
+		
+		
 		
 		
 	//getters and Setters
