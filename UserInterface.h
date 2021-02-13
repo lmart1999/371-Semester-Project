@@ -25,13 +25,15 @@ class UserInterface {
 	private:
 		Maker make;
 		stack<Directory> *directories;
+		DiskManager *dm;
+
 	
 	public:
 	
 	//full constructor
-	UserInterface(stack<Directory> &directories, DiskManager &dm);
+	UserInterface(stack<Directory> &directories, DiskManager &dMan);
 	//Processes all commands and calls the relevant function or class needed to complete them
-	void menu(DiskManager &dm);
+	void menu();
 
 };
 

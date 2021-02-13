@@ -13,18 +13,19 @@ using namespace std;
 
 	Maker make;
 	stack<Directory> *directories;
-
+	DiskManager *dMan;
 
 	//primary constructor, called from main to create Text files and determine size
-	UserInterface::UserInterface(stack<Directory> &d, DiskManager &dm) {
+	UserInterface::UserInterface(stack<Directory> &d, DiskManager &dd) {
 		directories = &d;
-		make.setDiskManager(dm);
-		menu(dm);
+		make.setDiskManager(dd);
+		dMan = &dd;
+		menu();
 	}
 	
 	
 	//Processes all commands and calls the relevant function or class needed to complete them
-	void UserInterface::menu(DiskManager &dm) {
+	void UserInterface::menu() {
 		
 		//variable that will be used to temporarily hold input data before putting it into the file
 		string command;
@@ -66,7 +67,7 @@ using namespace std;
 			//Executes the EndDir Command
 			}else if (command == "enddir") {
 				Directory end = (directories->top());
-				dm.writeEndDirectoryF(end);
+				dMan->writeEndDirectoryF(end);
 				directories->pop();
 				//file.seekg(0,ios::end);
 				if(directories->empty()) {
