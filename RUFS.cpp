@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 	
 	
 	
-	
+	//Maker make();
 	//variable that will be used to temporarily hold input data before putting it into the file
 	//string command;
 	
