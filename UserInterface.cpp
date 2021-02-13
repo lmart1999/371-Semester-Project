@@ -11,17 +11,20 @@
 using namespace std;
 
 
-	
+	Maker make;
+	stack<Directory> *directories;
+
 
 	//primary constructor, called from main to create Text files and determine size
-	UserInterface::UserInterface(stack<Directory> &directories, DiskManager &dm) {
-		Maker m;
-		menu(directories, m, dm);
+	UserInterface::UserInterface(stack<Directory> &d, DiskManager &dm) {
+		directories = &d;
+		make.setDiskManager(dm);
+		menu(dm);
 	}
 	
 	
 	//Processes all commands and calls the relevant function or class needed to complete them
-	void UserInterface::menu(stack<Directory> &directories, Maker &make, DiskManager &dm) {
+	void UserInterface::menu(DiskManager &dm) {
 		
 		//variable that will be used to temporarily hold input data before putting it into the file
 		string command;
@@ -42,31 +45,31 @@ using namespace std;
 			//Executes the createDir command
 			if (command == "createdir") {
 				//calls the create directoy file to make a new properly named and formatted directory object to add to the stack
-				Directory temp =make.createDirectory(dm); 
+				Directory temp =make.createDirectory(); 
 				//pulls top directory off, adds one to its num of programs and replaces it on the stack
-				Directory mod = directories.top();
+				Directory mod = directories->top();
 				mod.setNumObj(mod.getNumObj()+1);
-				directories.pop();
-				directories.push(mod);
+				directories->pop();
+				directories->push(mod);
 				//adds new directory to the stack
-				directories.push(temp);
+				directories->push(temp);
 				//Executes the CreateFile command
 			}else if (command == "createfile") {
-				make.createFileName(dm); //creates and writes a text or program file to the binary file
+				make.createFileName(); //creates and writes a text or program file to the binary file
 			
 				//pulls top directory off, adds one to its num of programs and replaces it on the stack
-				Directory mod = directories.top();
+				Directory mod = directories->top();
 				mod.setNumObj(mod.getNumObj()+1);
-				directories.pop();
-				directories.push(mod);
+				directories->pop();
+				directories->push(mod);
 			
 			//Executes the EndDir Command
 			}else if (command == "enddir") {
-				Directory end = directories.top();
+				Directory end = (directories->top());
 				dm.writeEndDirectoryF(end);
-				directories.pop();
+				directories->pop();
 				//file.seekg(0,ios::end);
-				if(directories.empty()) {
+				if(directories->empty()) {
 					break;
 				}
 			}else {

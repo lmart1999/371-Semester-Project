@@ -10,6 +10,8 @@
 using namespace std;
 
 	//primary constructor, called from main to create Text files and determine size
+		DiskManager *dm;
+
 	
 	Maker::Maker() {
 	}
@@ -23,7 +25,7 @@ using namespace std;
 	calls: checkExtension, checkString, namePadder, createProgramFile, createTextFile
 	called by: main
 	*/
-	void Maker::createFileName(DiskManager &dm) {
+	void Maker::createFileName() {
 		cout <<"Enter File Name: ";
 		std::string fileName;
 		cin >> fileName;
@@ -72,9 +74,9 @@ using namespace std;
 		//pads shorter filenames with null characters before the extension
 		fileName =namePadder(fileName);
 		if(fileType==1) {
-			createTextFile(fileName, dm);
+			createTextFile(fileName);
 		}else if (fileType==2) {
-			createProgramFile(fileName, dm);
+			createProgramFile(fileName);
 		}
 	
 		return;
@@ -147,14 +149,14 @@ using namespace std;
 	calls: Text and writes the file to the binary file
 
 	*/
-	void Maker::createTextFile(string name, DiskManager &dm) {
+	void Maker::createTextFile(string name) {
 		string contents;
 		cout << "Enter Text: ";
 		cin.ignore();
 		getline(cin, contents);
 		
 		Text text(name, contents);
-		dm.writeTextF(text);
+		dm->writeTextF(text);
 		return;
 	}
 
@@ -167,7 +169,7 @@ using namespace std;
 	calls: Program and writes the file to the binary file by calling writeProgramF
 
 	*/
-	void Maker::createProgramFile(string name, DiskManager &dm) {
+	void Maker::createProgramFile(string name) {
 		int cpuReq;
 		int memReq;
 		cout << "Enter CPU requirements: ";
@@ -175,7 +177,7 @@ using namespace std;
 		cout << "Enter Memory Requirements: ";
 		cin >> memReq;
 		Program prog(name, cpuReq,memReq);
-		dm.writeProgramF(prog);
+		dm->writeProgramF(prog);
 		return;
 	}
 
@@ -227,10 +229,15 @@ using namespace std;
 	* Returns a Directory
 	*/
 
-	Directory Maker::createDirectory(DiskManager &dm) {
+	Directory Maker::createDirectory() {
 		string dirName =createDirName();
 		Directory temp = Directory(dirName, 0, 0);
-		int curLoc = dm.writeDirectoryF(temp);
+		int curLoc = dm->writeDirectoryF(temp);
 		temp.setMemLoc(curLoc);
 		return temp;	
+	}
+	
+	
+	void Maker::setDiskManager(DiskManager &d){
+		dm = &d;
 	}
