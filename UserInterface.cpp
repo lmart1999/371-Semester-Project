@@ -45,8 +45,17 @@ using namespace std;
 		while (command != "quit") {
 			//Executes the createDir command
 			if (command == "mkdir") {
+				
+				/*
+				need to update to send the memlocation of the current directory to 
+				update num of files in current directory on the fly and allow for
+				copying and rewriting everything after this directory for 
+				inserting into the middle of the binary file
+				
+				*/
+				
 				//calls the create directoy file to make a new properly named and formatted directory object to add to the stack
-				Directory temp =make.createDirectory(); 
+				Directory temp =make.createDirectory(directories->top().getMemLoc()); 
 				//pulls top directory off, adds one to its num of programs and replaces it on the stack
 				Directory mod = directories->top();
 				mod.setNumObj(mod.getNumObj()+1);
@@ -56,7 +65,16 @@ using namespace std;
 				directories->push(temp);
 				//Executes the CreateFile command
 			}else if (command == "createfile") {
-				make.createFileName(); //creates and writes a text or program file to the binary file
+				
+				/*
+				need to update to send the memlocation of the current directory to 
+				update num of files in current directory on the fly and allow for
+				copying and rewriting everything after this directory for 
+				inserting into the middle of the binary file
+				
+				*/
+				
+				make.createFileName(directories->top().getMemLoc()); //creates and writes a text or program file to the binary file
 			
 				//pulls top directory off, adds one to its num of programs and replaces it on the stack
 				Directory mod = directories->top();
@@ -90,18 +108,27 @@ using namespace std;
 			}else if (command == "cd") {
 				string search;
 				cin >>search;
-				search = make.namePadder(search);
-				Directory temp = dMan->cd(directories->top().getMemLoc(), search);
-				if(temp.getName() != "null") {
-					directories->push(temp);
+				if(search == "..") {
+					Directory temp = directories->top();
+					directories->pop();
+					if( directories->empty()) {
+						cout << "In root directory" << endl;
+						directories->push(temp);
+					}
+				}else {
+					search = make.namePadder(search);
+					Directory temp = dMan->cd(directories->top().getMemLoc(), search);
+					if(temp.getName() != "null") {
+						directories->push(temp);
+					}
 				}
 			}else if (command == "step") {
 				
 			}else if (command == "printinfo") {
-				dMan->reader();
+				dMan->reader(directories->top().getMemLoc());
 			}else if (command == "enddir") {
 				Directory end = (directories->top());
-				dMan->writeEndDirectoryF(end);
+				dMan->writeEndDirectoryF(end, directories->top().getMemLoc());
 				directories->pop();
 				//file.seekg(0,ios::end);
 				if(directories->empty()) {

@@ -6,14 +6,11 @@ to avoid overwrite errors.
 Commands can be input from text file with one of two formats.
 
 FORMAT 1
-Each command followed immediately by an enter
-Createfile
-test.t
+Each command followed immediately by either an enter or their parameter(ie a file to search or create)
+Createfile test.t
 input text can be longer
-createdir
-dirname
-createfile
-prog.p
+mkdir dirname
+createfile prog.p
 4
 5
 quit
@@ -22,7 +19,7 @@ If a directory is not ended upon quit it is automatically ended at the end of th
 
 FORMAT 2
 Createfile test.t all of this will be input text
-createdir first createfile prog.p 3 4 enddir quit
+mkdir first createfile prog.p 3 4 enddir quit
 
 with this format you only need an enter after the input of a .t file to signify the end of input
 
@@ -31,9 +28,9 @@ upon recieving an invalid filenames such as ones greater than 11 characters, wit
 the program will prompt the user to reenter a proper filename, the same goes for directories.
 
 There have been three sample inputs included in this program, to run them use the following commands
-./RUFS <sample.txt
-./RUFS <sample2.txt
-./RUFS <sample3.txt
+./RUSH <sample.txt
+./RUSH <sample2.txt
+./RUSH <sample3.txt
 
 Sample 3 is the same as the test input given in the assignment
 
@@ -65,7 +62,3 @@ The file operates with 4 commands
 
 None of these are case sensitive commands, names are validated upon entering as are commands, if either is invalid you will be prompted to reenter them.
 
-
-Future Improvements:
-Make a disk manager class to handle reading and writing
-Make another class for User interacton

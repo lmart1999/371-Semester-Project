@@ -51,28 +51,28 @@ class DiskManager {
 	input: text file, fstream pointer
 	called by:createTextFile
 	*/
-	void writeTextF(Text input);
+	void writeTextF(Text input, int dirPos);
 	/*
 	Purpose: to write the most recently created Program file to the binary file
 	output: none
 	input: text file, fstream pointer
 	calledby: createProgramFile
 	*/
-	void writeProgramF( Program input);
+	void writeProgramF( Program input, int dirPos);
 	/*
 	Purpose: to write the most recently created Program file to the binary file
 	output: none
 	input: text file, fstream pointer
 	called by: main
 	*/
-	void writeEndDirectoryF(Directory input);
+	void writeEndDirectoryF(Directory input, int dirPos);
 	/*
 	Purpose: to write the most recently created Program file to the binary file
 	output: none
 	input: text file, fstream pointer
 	called by : createDirectory
 	*/
-	int writeDirectoryF(Directory input);
+	int writeDirectoryF(Directory input, int dirPos);
 	/*
 	Purpose: to read all input into the binary file thus far
 	Input: an fstream pointer to the open file
@@ -80,17 +80,18 @@ class DiskManager {
 	calls: checkExtensionR
 	called by: main
 	*/
-	void reader();
+	void reader(int curDir);
 	//determines size of contents
 	void findSize();
+	void skipFile(int ext);
+	void skipDir();
+	int readName();
+	Directory cd(int pos, string search);
+	void ls(int pos);
 	
 	//getters and setters
 	void setName(char* n);
 	char* getName();
-	void skipFile(int ext);
-	void skipDir();
-	Directory cd(int pos, string search);
-	void ls(int pos);
 	
 };
 

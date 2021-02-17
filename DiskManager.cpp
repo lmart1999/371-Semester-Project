@@ -48,7 +48,7 @@ using namespace std;
 				rootDir.insert(rootDir.length()-2, 1, '\0');
 			}
 			Directory root = Directory(rootDir, 0, 0);
-			writeDirectoryF(root);
+			writeDirectoryF(root, 0);
 		}
 		return flag;
 	}
@@ -87,7 +87,26 @@ using namespace std;
 	called by:createTextFile
 	*/
 	
-	void DiskManager::writeTextF(Text input) {
+	void DiskManager::writeTextF(Text input, int dirPos) {
+		
+		int toRead;
+		file.seekg(0,ios::end);
+		//cout <<file.tellg();
+		toRead = file.tellg()-(dirPos+15);
+		char stringChar;
+		string fileC = "";
+		file.seekg(dirPos+15,ios::beg);
+		for (int j =0; j<toRead; j++){
+			file.read((char*)&stringChar, sizeof(char));
+			fileC = fileC + stringChar;
+		}
+		file.seekg((dirPos+11), ios::beg);
+		//updates objects in directory
+		int newO;
+		file.read((char*)&newO, sizeof(int));
+		newO++;
+		file.seekg(-4,ios::cur);
+		file.write((char*)&newO, sizeof(newO));
 		
 		string name = input.getName(); //saves file name as a string
 		string contents = input.getContents(); // saves file contents
@@ -95,9 +114,11 @@ using namespace std;
 		file.write(name.c_str(), 11); // writes file name to binay file
 		file.write((char*)&size, sizeof(size)); // writes content size to binary file
 		file.write(contents.c_str(), size); // writes content to binary file
-		
+		file.write(fileC.c_str(), fileC.length());
+
 		
 	}
+	
 	
 	
 	/*
@@ -107,8 +128,26 @@ using namespace std;
 	calledby: createProgramFile
 	*/
 	
-	void DiskManager::writeProgramF( Program input) {
-		
+	void DiskManager::writeProgramF( Program input, int dirPos) {
+		int toRead;
+		file.seekg(0,ios::end);
+		//cout <<file.tellg();
+		toRead = file.tellg()-(dirPos+15);
+		char stringChar;
+		string fileC = "";
+		file.seekg(dirPos+15,ios::beg);
+		for (int j =0; j<toRead; j++){
+			file.read((char*)&stringChar, sizeof(char));
+			fileC = fileC + stringChar;
+		}
+		file.seekg((dirPos+11), ios::beg);
+
+		//updates objects in directory
+		int newO;
+		file.read((char*)&newO, sizeof(int));
+		newO++;
+		file.seekg(-4,ios::cur);
+		file.write((char*)&newO, sizeof(newO));
 		
 		string name = input.getName();
 		//cout << name<< endl;
@@ -117,7 +156,7 @@ using namespace std;
 		file.write(name.c_str(), 11); // writes file name to binary
 		file.write((char*)&cpuReq, sizeof(cpuReq)); //writes cpuReq to binayr file
 		file.write((char*)&memReq, sizeof(memReq)); //writes mem req to binary file
-		
+		file.write(fileC.c_str(), fileC.length());
 	}
 	
 	/*
@@ -129,35 +168,82 @@ using namespace std;
 
 
 	
-	void DiskManager::writeEndDirectoryF(Directory input) {
+	void DiskManager::writeEndDirectoryF(Directory input, int dirPos) {
+		string test = "root.d";
+		string fileC = "";
+		while (test.length() <11) {
+			test.insert(test.length()-2, 1, '\0');
+		}
+		if(input.getName() != test) {
 		
+			int toRead;
+			file.seekg(0,ios::end);
+			//cout <<file.tellg() << "\n" << dirPos<< endl;
+			toRead = file.tellg()-(dirPos+15);
+			char stringChar;
+			file.seekg(dirPos+15,ios::beg);
+			for (int j =0; j<toRead; j++){
+				file.read((char*)&stringChar, sizeof(char));
+				fileC = fileC + stringChar;
+			}
+		
+			file.seekg((dirPos+15), ios::beg);
+		}
 		
 		
 		string name = input.getName();
 	
-		int numObj = input.getNumObj(); //retrieves number of objects in directory to be ended
+		//int numObj = input.getNumObj(); //retrieves number of objects in directory to be ended
 		int memLoc= input.getMemLoc(); // retrieves memory location of start of directory
-		memLoc = memLoc+11; //udjust memeory location for location for number of OBJ
-		file.seekg(memLoc, ios::beg ); // seeks to the memory location 
-		file.write((char*)&numObj, sizeof(numObj));//writes number of Objecs to binary file
-		file.seekg(0, ios::end); //seeks to end of file
+		//memLoc = memLoc+11; //adjust memeory location for location for number of OBJ
+		//file.seekg(memLoc, ios::beg ); // seeks to the memory location 
+		//file.write((char*)&numObj, sizeof(numObj));//writes number of Objecs to binary file
+		file.seekg((dirPos+15), ios::beg); //seeks to end of file
 		name = "END" + name; // adds END to beggining of Directory name
 		file.write(name.c_str(), 14); // writes file name to binary
-		file.seekg(0,ios::end);
-
+		//file.seekg(0,ios::end);
+		if(input.getName() != test) {
+			file.write(fileC.c_str(), fileC.length());
+		}
 		
 		
 	}
 	
 	/*
-	Purpose: to write the most recently created Program file to the binary file
+	Purpose: to write the most recently created Directory to the binary file
 	output: none
 	input: text file, fstream pointer
 	called by : createDirectory
 	*/
 	
-	int DiskManager::writeDirectoryF(Directory input) {
+	int DiskManager::writeDirectoryF(Directory input, int dirPos) {
+		string test = "root.d";
+		string fileC = "";
+		while (test.length() <11) {
+			test.insert(test.length()-2, 1, '\0');
+		}
+		if(input.getName() != test) {
 		
+		
+			int toRead;
+			file.seekg(0,ios::end);
+			//cout <<file.tellg() << "\n" << dirPos<< endl;
+			toRead = file.tellg()-(dirPos+15);
+			char stringChar;
+			file.seekg(dirPos+15,ios::beg);
+			for (int j =0; j<toRead; j++){
+				file.read((char*)&stringChar, sizeof(char));
+				fileC = fileC + stringChar;
+			}
+		
+			file.seekg((dirPos+11), ios::beg);
+			//updates objects in directory
+			int newO;
+			file.read((char*)&newO, sizeof(int));
+			newO++;
+			file.seekg(-4,ios::cur);
+			file.write((char*)&newO, sizeof(newO));
+		}
 		
 		int curLoc = file.tellg();
 		input.setMemLoc(file.tellg());
@@ -167,6 +253,12 @@ using namespace std;
 		//int memLoc= input.getMemLoc();
 		file.write(name.c_str(), 11); // writes file name to binary
 		file.write((char*)&numObj, sizeof(numObj)); //writes number of Objecs to binary file
+		if(input.getName() != test) {
+
+			file.write(fileC.c_str(), fileC.length());
+		}
+		
+		writeEndDirectoryF(input, curLoc);
 		//file.write((char*)&memLoc, sizeof(memLoc)); //writes mem req to binary file
 		
 		return curLoc;
@@ -183,88 +275,116 @@ using namespace std;
 	*/
 	
 	
-	void DiskManager::reader() {
+	void DiskManager::reader(int curDir) {
 		
 		
-	file.seekg(0, ios::beg);
-	int numO = 0;
+		file.seekg(0, ios::beg);
+		int numO = 0;
 	
-	cout <<"\n";
-	while(!file.eof()){
-		cout<< file.tellg() << ": " ;
+		cout <<"\n";
+		while(!file.eof()){
+			cout<< file.tellg() << ": " ;
 	
+			char stringChar;
+			string fname = "";
+		
+			for (int j =0; j<11; j++){
+				file.read((char*)&stringChar, sizeof(char));
+				fname = fname + stringChar;
+			}
+		
+		
+			int fileType = checkExtensionR(fname);
+		
+			if( fileType ==4) {
+				for (int j =0; j<3; j++){
+					file.read((char*)&stringChar, sizeof(char));
+					fname = fname + stringChar;
+				}
+			}
+		
+		
+			if(fileType ==1) {
+				cout << "	"<< fname << endl;
+				cout << "	Type:	Text" << endl;
+				cout<< file.tellg() ; //tells current memlocation
+				int size = 0; // to store size of text file contents
+
+				file.read((char*)&size, sizeof(size)); // reads in size of text file contents
+				cout << ": Size of Text File:	" <<size << " byte"<< endl;  //tells size
+				string contents = ""; //holder string
+				cout<< file.tellg() << ": " ;
+
+				//for loop that reads in the contents of the text file
+				for (int j =0; j<size; j++){
+					file.read((char*)&stringChar, sizeof(char));
+					contents = contents + stringChar;
+				}
+			cout << "Contents of text file:	"<< contents <<  endl;
+	
+		
+			}else if(fileType ==2) {
+				cout << "	Filename:"<< fname << endl;
+				int cReq = 0;
+				int mReq = 0;
+				cout << "	Type: Program" << endl;
+				cout<< file.tellg() << ": " ; //tells current memory location
+				file.read((char*)&cReq, sizeof(cReq)); // reads in CPU req of text file contents
+				file.read((char*)&mReq, sizeof(mReq)); // reads in memory req of text file contents
+				cout << " Contents: CPU Requirement:\t " << cReq << ", Memory Requirement " << mReq << endl; // prints out data of file
+		
+			}else if(fileType ==3) {
+				cout << "Directory:"<< fname << endl;
+				int numO = 0;
+				//cout << "	Type: Directory" << endl;
+				cout<< file.tellg() << ": " ; //tells current memory location
+				file.read((char*)&numO, sizeof(numO)); // reads in number of Objects of text file contents
+				cout << "Directory " << fname << " contains " << numO << " file/directory" << endl; // prints out data of Directory
+		
+			}else {
+				cout<< "End of Directory " << fname.substr(3,11) << endl;
+				//ends if final directory is ended
+				//char test;
+				//file.read((char*)&test, sizeof(test));			
+				//if (file.eof()) {
+				if (fname.substr(3,4)=="root") {
+					file.seekg(curDir,ios::beg);
+					return;
+				}/*else{
+					file.seekg(-1, ios::cur);
+				}*/
+			
+			}
+		
+		}
+		file.seekg(0, ios::beg);
+
+	}
+	
+	int DiskManager::readName() {
 		char stringChar;
-        string name = "";
-		
-        for (int j =0; j<11; j++){
-            file.read((char*)&stringChar, sizeof(char));
-            name = name + stringChar;
-        }
-		
-		
-		int fileType = checkExtensionR(name);
-		
+		string fname = "";
+		//stores int representing filetype
+		int fileType = 0;
+		//reads in the next name in the file
+		for (int j =0; j<11; j++){
+			file.read((char*)&stringChar, sizeof(char));
+			fname = fname + stringChar;
+		}
+		//checks that names file type
+		fileType = checkExtensionR(fname);
+		//if its the end of the directory reads rest of it then returns to original function
 		if( fileType ==4) {
 			for (int j =0; j<3; j++){
 				file.read((char*)&stringChar, sizeof(char));
-				name = name + stringChar;
+				fname = fname + stringChar;
+				
 			}
+			return fileType;
 		}
-		
-		
-		if(fileType ==1) {
-			cout << "	"<< name << endl;
-			cout << "	Type:	Text" << endl;
-			cout<< file.tellg() ; //tells current memlocation
-			int size = 0; // to store size of text file contents
-
-			file.read((char*)&size, sizeof(size)); // reads in size of text file contents
-			cout << ": Size of Text File:	" <<size << " byte"<< endl;  //tells size
-			string contents = ""; //holder string
-			cout<< file.tellg() << ": " ;
-
-			//for loop that reads in the contents of the text file
-			for (int j =0; j<size; j++){
-				file.read((char*)&stringChar, sizeof(char));
-				contents = contents + stringChar;
-			}
-		cout << "Contents of text file:	"<< contents <<  endl;
+		return fileType;
+	}
 	
-		
-		}else if(fileType ==2) {
-			cout << "	Filename:"<< name << endl;
-			int cReq = 0;
-			int mReq = 0;
-			cout << "	Type: Program" << endl;
-			cout<< file.tellg() << ": " ; //tells current memory location
-			file.read((char*)&cReq, sizeof(cReq)); // reads in CPU req of text file contents
-			file.read((char*)&mReq, sizeof(mReq)); // reads in memory req of text file contents
-			cout << " Contents: CPU Requirement:\t " << cReq << ", Memory Requirement " << mReq << endl; // prints out data of file
-		
-		}else if(fileType ==3) {
-			cout << "Directory:"<< name << endl;
-			int numO = 0;
-			//cout << "	Type: Directory" << endl;
-			cout<< file.tellg() << ": " ; //tells current memory location
-			file.read((char*)&numO, sizeof(numO)); // reads in number of Objects of text file contents
-			cout << "Directory " << name << " contains " << numO << " file/directory" << endl; // prints out data of Directory
-		
-		}else {
-		    cout<< "End of Directory " << name.substr(3,11) << endl;
-			//ends if final directory is ended
-			char test;
-			file.read((char*)&test, sizeof(test));			
-			if (file.eof()) {
-				return;
-			}else{
-				file.seekg(-1, ios::cur);
-			}
-			
-		}
-		
-	}
-		
-	}
 	
 	/*
 	Purpose: skip a Directory in memory
@@ -274,41 +394,37 @@ using namespace std;
 	OutPut: none
 	*/
 	void DiskManager::skipDir() {
+		//seeks to the end of the directory name just read in
 		file.seekp(4,ios::cur);
+		//variables for storing names read in
 		char stringChar;
 		string fname = "";
+		//stores int representing filetype
 		int fileType = 0;
-		for (int j =0; j<11; j++){
-			file.read((char*)&stringChar, sizeof(char));
-			fname = fname + stringChar;
-		}
 		
-		fileType = checkExtensionR(fname);
+		//checks that names file type
+		fileType = readName();
+		//if its the end of the directory reads rest of it then returns to original function
 		if( fileType ==4) {
-			for (int j =0; j<3; j++){
-				file.read((char*)&stringChar, sizeof(char));
-				fname = fname + stringChar;
-				return;
-			}
+			return;
+
 		}
+		//reads and skips files and subdirectories until it reaches the end of the current directory
 		while (fileType != 4) {
-			
+			//call skipFile if its a text or program filel next
 			if(fileType ==1 ||fileType ==2){
 				skipFile(fileType);
+				//calls skip Dir if there is a sub directory
 			}else if(fileType ==3) {
 				skipDir();
 			}
-			for (int j =0; j<11; j++){
-				file.read((char*)&stringChar, sizeof(char));
-				fname = fname + stringChar;
-			}
-			fileType = checkExtensionR(fname);
+			
+			
+			//reads in next file and returns type of extension
+			fileType = readName();
+			//if end of Dir finishes reading and returns it
 			if( fileType ==4) {
-				for (int j =0; j<3; j++){
-					file.read((char*)&stringChar, sizeof(char));
-					fname = fname + stringChar;
-					return;
-				}
+				return;
 			}
 		}
 	}
@@ -319,10 +435,12 @@ using namespace std;
 	OutPut: none
 	*/
 	void DiskManager::skipFile(int ext) {
+		//if input file is type text, reads size and skips that many bytes
 		if (ext ==1){
 			int skip;
 			file.read((char*)&skip, sizeof(skip));
 			file.seekg(skip, ios::cur);
+			//of input file is type program skips 8 bytes, the size of 2 ints
 		}else {
 			file.seekg(8, ios::cur);
 		}
@@ -337,35 +455,43 @@ using namespace std;
 	
 	*/
 	void DiskManager::ls(int pos) {
+		//seeks to end of current directory
 		 file.seekg(pos+15, ios::beg);
-		 //int numO;
+		 //file.seekg(0,ios::end);
+		 //cout <<file.tellg() <<endl;
+
+		 //int to store fileTyoe;
 		 int fileType = 0;
+		 //stores File name
 		 string fname;
 		 //file.read((char*)&numO, sizeof(numO));
+		 //while it hasnt reached the end of the current directory read in the name of the files in it and print them, skipping contents of sub directories and files
 		 while(fileType !=4) {
-			 
+			 //stores characters read in and initializes fname
 			 char stringChar;
-			string fname = "";
-		
+			 fname = "";
+			// reads in first file name
 			for (int j =0; j<11; j++){
 				file.read((char*)&stringChar, sizeof(char));
 				fname = fname + stringChar;
 			}
 		
-		
+			// checks extension
 			fileType = checkExtensionR(fname);
-		
+			// if its the ned of the directory finishes reading it and returns function
 			if( fileType ==4) {
 				for (int j =0; j<3; j++){
 					file.read((char*)&stringChar, sizeof(char));
 					fname = fname + stringChar;
-					return;
+					
 				}
+				return;
 			}
-			
+			//if its a program or text file prints its name then skips its contents and continues
 			if (fileType ==1 || fileType ==2) {
 				cout << fname << endl;
 				skipFile(fileType);
+				//if its a directory prints its name then skips its contents
 			}else if (fileType ==3) {
 				cout <<fname <<endl;
 				skipDir();
@@ -376,39 +502,55 @@ using namespace std;
 		return;
 		 
 	}
+	/*
+	Purpose:changes working directory to another directory in the current or to the parent directory
+	Input: position of start of current directory and string of directory name to search for
+	Calls: skipDir, skipFile
+	Called By: DiskManager.menu()
+	OutPut: A directory to make the new working directory
+	
+	*/
 	Directory DiskManager::cd(int pos, string search) {
+		//placeholder for the directory that will become the new working directory, if none is found this is returned and nothing happens
 		Directory change("null",0,0);
+		//seeks to end of current directory
 		 file.seekg(pos+15, ios::beg);
+		 //stores number of objects in new directory
 		 int numO;
+		 //stores position of new directory
 		 int newPos;
+		 //stores filetype being read in
 		 int fileType = 0;
+		 //stores file name being read
 		 string fname;
 		 //file.read((char*)&numO, sizeof(numO));
+		 //reads contents of current directory until the end of the directory or until the target is found, skips contents of sub directories
 		 while(fileType !=4) {
-			 
+			 //holds characters read in and initializes fname
 			 char stringChar;
-			string fname = "";
-		
+			fname = "";
+			//reads in first file name
 			for (int j =0; j<11; j++){
 				file.read((char*)&stringChar, sizeof(char));
 				fname = fname + stringChar;
 			}
 			
-		
+			//checks Extension
 			fileType = checkExtensionR(fname);
-		
+			//if end of Directorysays that the searched directory is not found and returns the null directory
 			if( fileType ==4) {
 				for (int j =0; j<3; j++){
 					file.read((char*)&stringChar, sizeof(char));
 					fname = fname + stringChar;
-					cout << "Directory " << search << " not found\n"; 
-					return change;
 				}
+				cout << "Directory " << search << " not found\n"; 
+				return change;
 			}
-			
+			//if the namne read in is a program or text file skips it
 			if (fileType ==1 || fileType ==2) {
 				//cout << fname << endl;
 				skipFile(fileType);
+				//if name read in is a directory checks to see if it matches, if so gets its info and sets it to the change directory and returns it, if not skips it
 			}else if (fileType ==3) {
 				if (search ==fname) {
 					cout <<fname <<endl;

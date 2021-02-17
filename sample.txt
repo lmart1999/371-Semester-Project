@@ -3,29 +3,33 @@ TextF.t
 Hello There
 mkdir
 first
-createfile
-second.t
+createfile second.t
 Checking to see if it works
-createfile
-prog.p
+createfile prog.p
 4
 6
+mkdir second
+createfile final.p
+10
+9
 enddir
 createfile
-another.p
+aftdir.p
+15
+16
+enddir
+createfile another.p
 7
 8
-createfile
-text2.t
+createfile text2.t
 so many files
-mkdir
-second
-mkdir
-programs
-createfile
-bigprog.p
+mkdir third
+mkdir programs
+createfile bigprog.p
 10
 15
+enddir
+enddir
 enddir
 quit
 

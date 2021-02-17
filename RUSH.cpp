@@ -70,18 +70,19 @@ int main(int argc, char** argv)
 	
 	// ends all currently open directories
 	//cout <<fin <<endl;
+	/*
 	if (fin == 1) {
 		while(!directories.empty()) {
 			Directory end = directories.top();
 			//if (end.getName().substr(0,4) !="root") {
-				diskManager.writeEndDirectoryF(end);
+				//diskManager.writeEndDirectoryF(end);
 				directories.pop();
 			//}else {
 			//	break;
 			//}
 	
 		}
-	}
+	}*/
 
 	//file.close();
 	return 0;

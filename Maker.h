@@ -36,7 +36,7 @@ class Maker {
 	calls: checkExtension, checkString, namePadder, createProgramFile, createTextFile
 	called by: main
 	*/
-	void createFileName();
+	void createFileName(int dirPos);
 	/*
 	Purpose: checks the extension of the entered filenames validity
 	input: a filename
@@ -66,7 +66,7 @@ class Maker {
 	calls: Text and writes the file to the binary file
 
 	*/
-	void createTextFile(string name) ;
+	void createTextFile(string name, int dirPos) ;
 	/*
 	Purpose: calls the Program class to create a program file and input the contents
 	Input: a file name and user inputted contents
@@ -75,7 +75,7 @@ class Maker {
 	calls: Program and writes the file to the binary file by calling writeProgramF
 
 	*/
-	void createProgramFile(string name );
+	void createProgramFile(string name, int dirPos );
 
 	/*
 	*Purpose: to create and return a directory 
@@ -83,7 +83,7 @@ class Maker {
 	* is called by Main
 	* Returns a Directory
 	*/
-	Directory createDirectory();
+	Directory createDirectory(int dirPos);
 	/*
 	Purpose: to recieve user input for a directory name and call functions to normalize it
 	input: n/a
