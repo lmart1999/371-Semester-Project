@@ -191,6 +191,13 @@ using namespace std;
 		//cout <<"Enter Directory Name: ";
 		std::string dirName; //holds the inputted directory name
 		cin >> dirName;
+		while (dirName == "root") {
+			cout << "directory name cannot be root\nEnter new Directory name: ";
+			cin >> dirName;
+
+		}
+		
+		
 		dirName += ".d";
 		//to keep track of extension and name character type validity
 		bool validChars = false;

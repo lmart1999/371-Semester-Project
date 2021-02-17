@@ -43,7 +43,7 @@ return type: int
 int main(int argc, char** argv)
 {
 	if(argv[1] ==NULL) {
-		argv[1] = "RUFS.txt";
+		argv[1] = "RUSH.txt";
 	}
 	//if file for argv already exists removes it so overwriting doesnt cause issues
 	//remove ( argv[1] );

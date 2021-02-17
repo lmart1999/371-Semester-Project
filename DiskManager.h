@@ -88,7 +88,13 @@ class DiskManager {
 	int readName();
 	Directory cd(int pos, string search);
 	void ls(int pos);
-	
+	void cat(int pos, string search);
+	int searchProg(int pos, string seatch);
+	void step(int pos, string seatch);
+	void run(int pos, string seatch);
+	void start(int pos, string seatch);
+	string copy(int dirPos);
+
 	//getters and setters
 	void setName(char* n);
 	char* getName();
