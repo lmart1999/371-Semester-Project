@@ -82,6 +82,7 @@ using namespace std;
 				}
 				cout <<"\n";
 			}else if (command == "cat") {
+				
 			}else if (command == "run") {
 				
 			}else if (command == "start") {
