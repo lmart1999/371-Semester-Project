@@ -16,7 +16,7 @@ using namespace std;
 	DiskManager::DiskManager(char* s) {
 		name =s;
 
-		createFile();
+		//createFile();
 		
 	}
 	//Full Constructor
@@ -24,8 +24,8 @@ using namespace std;
 		//createFile();
 		
 	}
-	void DiskManager::createFile() {
-		
+	int DiskManager::createFile() {
+		int flag = 0;
 		//fstream file;
 		file.open(name, ios::binary | ios::out | ios::in | ios::app );
 		file.close();
@@ -40,8 +40,17 @@ using namespace std;
 		end =file.tellg();
 		//returns pointer to beggining
 		file.seekg(0, ios::beg);
-		
-		
+		if (end == begin) {
+			flag = 1;
+			// initializes the root directory and writes it to the binary file
+			string rootDir = "root.d";
+			while (rootDir.length() <11) {
+				rootDir.insert(rootDir.length()-2, 1, '\0');
+			}
+			Directory root = Directory(rootDir, 0, 0);
+			writeDirectoryF(root);
+		}
+		return flag;
 	}
 		
 		
@@ -256,6 +265,172 @@ using namespace std;
 	}
 		
 	}
+	
+	/*
+	Purpose: skip a Directory in memory
+	Input: none
+	Calls: skipFile, skip dir
+	Called By: DiskManager.menu(), skipdir
+	OutPut: none
+	*/
+	void DiskManager::skipDir() {
+		file.seekp(4,ios::cur);
+		char stringChar;
+		string fname = "";
+		int fileType = 0;
+		for (int j =0; j<11; j++){
+			file.read((char*)&stringChar, sizeof(char));
+			fname = fname + stringChar;
+		}
+		
+		fileType = checkExtensionR(fname);
+		if( fileType ==4) {
+			for (int j =0; j<3; j++){
+				file.read((char*)&stringChar, sizeof(char));
+				fname = fname + stringChar;
+				return;
+			}
+		}
+		while (fileType != 4) {
+			
+			if(fileType ==1 ||fileType ==2){
+				skipFile(fileType);
+			}else if(fileType ==3) {
+				skipDir();
+			}
+			for (int j =0; j<11; j++){
+				file.read((char*)&stringChar, sizeof(char));
+				fname = fname + stringChar;
+			}
+			fileType = checkExtensionR(fname);
+			if( fileType ==4) {
+				for (int j =0; j<3; j++){
+					file.read((char*)&stringChar, sizeof(char));
+					fname = fname + stringChar;
+					return;
+				}
+			}
+		}
+	}
+	/*
+	Purpose: skip a file in memory
+	Input: position of end of file name
+	Called By: DiskManager.menu(), skipdir
+	OutPut: none
+	*/
+	void DiskManager::skipFile(int ext) {
+		if (ext ==1){
+			int skip;
+			file.read((char*)&skip, sizeof(skip));
+			file.seekg(skip, ios::cur);
+		}else {
+			file.seekg(8, ios::cur);
+		}
+		
+	}
+	/*
+	Purpose: List all files and directories in the current directory
+	Input: position of start of current directory
+	Calls: skipDir, skipFile
+	Called By: DiskManager.menu()
+	OutPut: List of all current files and directories in the current directory
+	
+	*/
+	void DiskManager::ls(int pos) {
+		 file.seekg(pos+15, ios::beg);
+		 //int numO;
+		 int fileType = 0;
+		 string fname;
+		 //file.read((char*)&numO, sizeof(numO));
+		 while(fileType !=4) {
+			 
+			 char stringChar;
+			string fname = "";
+		
+			for (int j =0; j<11; j++){
+				file.read((char*)&stringChar, sizeof(char));
+				fname = fname + stringChar;
+			}
+		
+		
+			fileType = checkExtensionR(fname);
+		
+			if( fileType ==4) {
+				for (int j =0; j<3; j++){
+					file.read((char*)&stringChar, sizeof(char));
+					fname = fname + stringChar;
+					return;
+				}
+			}
+			
+			if (fileType ==1 || fileType ==2) {
+				cout << fname << endl;
+				skipFile(fileType);
+			}else if (fileType ==3) {
+				cout <<fname <<endl;
+				skipDir();
+			}
+			
+			
+		}
+		return;
+		 
+	}
+	Directory DiskManager::cd(int pos, string search) {
+		Directory change("null",0,0);
+		 file.seekg(pos+15, ios::beg);
+		 int numO;
+		 int newPos;
+		 int fileType = 0;
+		 string fname;
+		 //file.read((char*)&numO, sizeof(numO));
+		 while(fileType !=4) {
+			 
+			 char stringChar;
+			string fname = "";
+		
+			for (int j =0; j<11; j++){
+				file.read((char*)&stringChar, sizeof(char));
+				fname = fname + stringChar;
+			}
+			
+		
+			fileType = checkExtensionR(fname);
+		
+			if( fileType ==4) {
+				for (int j =0; j<3; j++){
+					file.read((char*)&stringChar, sizeof(char));
+					fname = fname + stringChar;
+					cout << "Directory " << search << " not found\n"; 
+					return change;
+				}
+			}
+			
+			if (fileType ==1 || fileType ==2) {
+				//cout << fname << endl;
+				skipFile(fileType);
+			}else if (fileType ==3) {
+				if (search ==fname) {
+					cout <<fname <<endl;
+					file.read((char*)&numO, sizeof(numO));
+					newPos = file.tellg()-15;
+					change.setName(fname);
+					change.setNumObj(numO);
+					change.setMemLoc(newPos);
+					//change(fname, numO, newPos);
+					return change;
+				}else {
+					skipDir();
+				}
+			}
+			
+			
+		}
+		return change;
+		 
+	}
+	
+	
 	// Getters and setters
 	void DiskManager::setName(char* n) {
 		name = n;

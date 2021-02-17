@@ -26,7 +26,7 @@ using namespace std;
 	called by: main
 	*/
 	void Maker::createFileName() {
-		cout <<"Enter File Name: ";
+		//cout <<"Enter File Name: ";
 		std::string fileName;
 		cin >> fileName;
 	
@@ -188,7 +188,7 @@ using namespace std;
 	calledby: createDirectory
 	*/
 	string Maker::createDirName() {
-		cout <<"Enter Directory Name: ";
+		//cout <<"Enter Directory Name: ";
 		std::string dirName; //holds the inputted directory name
 		cin >> dirName;
 		dirName += ".d";

@@ -2,10 +2,9 @@ Createfile
 prog1.p
 2
 3
-createDir
+mkdir
 first
 createfile
 test.t
 A
-endDir
 quit

@@ -1,7 +1,7 @@
 createfile
 TextF.t
 Hello There
-createdir
+mkdir
 first
 createfile
 second.t
@@ -18,9 +18,9 @@ another.p
 createfile
 text2.t
 so many files
-createdir
+mkdir
 second
-createdir
+mkdir
 programs
 createfile
 bigprog.p

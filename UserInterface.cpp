@@ -29,7 +29,7 @@ using namespace std;
 		
 		//variable that will be used to temporarily hold input data before putting it into the file
 		string command;
-		
+		stack<Directory> list;
 			//Intorduction to the Program
 		cout << "Welcome to RUFS. Enter one of the following commands: "<< endl;
 		cout << "CreateDir or CreateFile or EndDir or quit "<< endl;
@@ -44,7 +44,7 @@ using namespace std;
 	
 		while (command != "quit") {
 			//Executes the createDir command
-			if (command == "createdir") {
+			if (command == "mkdir") {
 				//calls the create directoy file to make a new properly named and formatted directory object to add to the stack
 				Directory temp =make.createDirectory(); 
 				//pulls top directory off, adds one to its num of programs and replaces it on the stack
@@ -65,6 +65,39 @@ using namespace std;
 				directories->push(mod);
 			
 			//Executes the EndDir Command
+			}else if (command == "ls") {
+				dMan->ls(directories->top().getMemLoc());
+			}else if (command == "pwd") {
+				cout << "/";
+				while (!directories->empty()){
+					Directory temp = directories->top();
+					directories->pop();
+					list.push(temp);
+				}
+				while (!list.empty()){
+					Directory temp = list.top();
+					list.pop();
+					directories->push(temp);
+					cout << temp.getName() <<"/";
+				}
+				cout <<"\n";
+			}else if (command == "cat") {
+			}else if (command == "run") {
+				
+			}else if (command == "start") {
+				
+			}else if (command == "cd") {
+				string search;
+				cin >>search;
+				search = make.namePadder(search);
+				Directory temp = dMan->cd(directories->top().getMemLoc(), search);
+				if(temp.getName() != "null") {
+					directories->push(temp);
+				}
+			}else if (command == "step") {
+				
+			}else if (command == "printinfo") {
+				dMan->reader();
 			}else if (command == "enddir") {
 				Directory end = (directories->top());
 				dMan->writeEndDirectoryF(end);

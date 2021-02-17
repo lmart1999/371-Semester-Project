@@ -36,7 +36,7 @@ class DiskManager {
 	Purpose: to initialize the file that will be used for all read write operations
 	Called by the constructor
 	*/
-	void createFile();
+	int createFile();
 	/*
 	Purpose: checks the extension of the entered filename to determine the type of file to be read
 	input: a filename	
@@ -87,8 +87,10 @@ class DiskManager {
 	//getters and setters
 	void setName(char* n);
 	char* getName();
-	
-		
+	void skipFile(int ext);
+	void skipDir();
+	Directory cd(int pos, string search);
+	void ls(int pos);
 	
 };
 
