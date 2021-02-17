@@ -52,10 +52,6 @@ int main(int argc, char** argv)
 	
 	int fin = diskManager.createFile();
 	
-	//Maker make();
-	//variable that will be used to temporarily hold input data before putting it into the file
-	//string command;
-	
 	stack<Directory> directories;
 	// initializes the root directory and writes it to the binary file
 	string rootDir = "root.d";
@@ -67,22 +63,6 @@ int main(int argc, char** argv)
 	directories.push(root);
 	
 	UserInterface(directories, diskManager);
-	
-	// ends all currently open directories
-	//cout <<fin <<endl;
-	/*
-	if (fin == 1) {
-		while(!directories.empty()) {
-			Directory end = directories.top();
-			//if (end.getName().substr(0,4) !="root") {
-				//diskManager.writeEndDirectoryF(end);
-				directories.pop();
-			//}else {
-			//	break;
-			//}
-	
-		}
-	}*/
 
 	//file.close();
 	return 0;
