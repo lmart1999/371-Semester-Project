@@ -589,7 +589,6 @@ using namespace std;
 	Calls: skipDir, skipFile
 	Called By: DiskManager.menu()
 	OutPut:contents of the text file
-	
 	*/
 	void DiskManager::cat(int pos, string search) {
 		
@@ -652,15 +651,18 @@ using namespace std;
 		return;
 		 
 	}
+	
+	
 	/*
-	Purpose:opens a text file in the current directory and displays its contents
+	Purpose:to search for a program file in the current directory determine if it exists
 	Input: position of start of current directory and string of directory name to search for
 	Calls: skipDir, skipFile
-	Called By: DiskManager.menu()
-	OutPut:contents of the text file
+	Called By: start(), step(), run()
+	OutPut:an int telling whether it exists or not
 	
-	*/
-	int DiskManager::searchProg(int pos, string search) {
+	****REPLACED BY checkExists() KEEP AS COMMENT IN CASE PLACE HOLDERS NEED UNIQUE FUNCTION**** 
+	
+	int DiskManager::searchProg(string search, int pos) {
 		
 		//seeks to end of current directory start tag
 		 file.seekg(pos+15, ios::beg);
@@ -712,6 +714,10 @@ using namespace std;
 		}
 		return 0;
 	}
+	
+	
+	*/
+	
 	/*Purpose: to check if the file or Directory being created already exists, if so returns true, if not returns false
 	Input: a string to search for
 	output: a boolean
@@ -723,41 +729,43 @@ using namespace std;
 		//seeks to end of current directory start tag
 		 file.seekg(dirPos+15, ios::beg);
 		char stringChar;
-		string fname = "";
+		string fname;
 		//stores int representing filetype
 		int fileType = 0;
 		//reads in the next name in the file
-		for (int j =0; j<11; j++){
-			file.read((char*)&stringChar, sizeof(char));
-			fname = fname + stringChar;
-		}
-		//checks that names file type
-		fileType = checkExtensionR(fname);
-		//if its the end of the directory reads rest of it then returns to original function
-		if( fileType ==4) {
-			for (int j =0; j<3; j++){
+		while(fileType!=4) {
+			fname ="";
+			for (int j =0; j<11; j++){
 				file.read((char*)&stringChar, sizeof(char));
 				fname = fname + stringChar;
+			}
+			//checks that names file type
+			fileType = checkExtensionR(fname);
+			//if its the end of the directory reads rest of it then returns to original function
+			if( fileType ==4) {
+				for (int j =0; j<3; j++){
+					file.read((char*)&stringChar, sizeof(char));
+					fname = fname + stringChar;
+				
+				}
+				return false;
+			}
+			else if(fileType==1 || fileType==2) {
+				if(fname == search) {
+					return true;
+				}else {
+					skipFile(fileType);
+				}
+			}else if(fileType==3){
+				if(fname ==search) {
+					return true;
+				}else {
+					skipDir();
+				}
 				
 			}
-			 return false;
 		}
-		else if(fileType==1 || fileType==2) {
-			if(fname == search) {
-				return true;
-			}else {
-				skipFile(fileType);
-			}
-		}else {
-			if(fname ==search) {
-				return true;
-			}else {
-				skipDir();
-			}
-				
-		}
-		
-		return false;
+		return true;
 	}
 	
 	
@@ -769,10 +777,17 @@ using namespace std;
 	calls: searchProg
 	*/
 	void DiskManager::step(int pos, string search) {
-		int exists = searchProg(pos, search);
-		if (exists == 1) {
+		bool exists = checkExists(search, pos);
+		int check = checkExtensionR(search);
+		if (check!=2) {
+			cout<< "Invalid program name" <<endl;
+			return;
+		}
+		
+		if (exists == true) {
 			cout << "\tStepping in Program: "<< search<<endl;
-			
+		} else {
+			cout <<"Program "<<search <<" not found" <<endl;
 		}
 		
 	}
@@ -784,10 +799,17 @@ using namespace std;
 	calls: searchProg
 	*/
 	void DiskManager::run(int pos, string search) {
-		int exists = searchProg(pos, search);
-		if (exists == 1) {
+		bool exists = checkExists(search, pos);
+		int check = checkExtensionR(search);
+		if (check!=2) {
+			cout<< "Invalid program name" <<endl;
+			return;
+		}
+		if (exists == true) {
 			cout << "\tRunning Program:  "<< search<<endl;
 			
+		}else {
+			cout <<"Program "<<search <<" not found" <<endl;
 		}
 		
 		
@@ -800,9 +822,16 @@ using namespace std;
 	calls: searchProg
 	*/
 	void DiskManager::start(int pos, string search) {
-		int exists = searchProg(pos, search);
-		if (exists == 1) {
+		bool exists = checkExists(search, pos);
+		int check = checkExtensionR(search);
+		if (check!=2) {
+			cout<< "Invalid program name" <<endl;
+			return;
+		}
+		if (exists == true) {
 			cout << "\tStarting Program: "<< search<<endl;
+		}else {
+			cout <<"Program "<<search <<" not found" <<endl;
 		}
 		
 	}

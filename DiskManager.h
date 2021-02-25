@@ -59,6 +59,14 @@ class DiskManager {
 	calledby: createProgramFile
 	*/
 	void writeProgramF( Program input, int dirPos);
+	
+	/*
+	Purpose: to copy everything after the insertion point
+	Input: a position 
+	output: the contents of the file after the position
+	*/
+	string copy(int dirPos);
+
 	/*
 	Purpose: to write the most recently created Program file to the binary file
 	output: none
@@ -66,6 +74,7 @@ class DiskManager {
 	called by: main
 	*/
 	void writeEndDirectoryF(Directory input, int dirPos);
+	
 	/*
 	Purpose: to write the most recently created Program file to the binary file
 	output: none
@@ -83,23 +92,77 @@ class DiskManager {
 	void reader(int curDir);
 	//determines size of contents
 	void findSize();
+	/*
+	Purpose: skip a file in memory
+	Input: position of end of file name
+	Called By: DiskManager.menu(), skipdir
+	OutPut: none
+	*/	
 	void skipFile(int ext);
+	/*
+	Purpose: skip a Directory in memory
+	Input: none
+	Calls: skipFile, skip dir
+	Called By: DiskManager.menu(), skipdir
+	OutPut: none
+	*/
 	void skipDir();
+	/*
+	Purpose: to read the names of files or directories from the binary file and return the type
+	input: none
+	calls: checkextensionR
+	outputs: int representing filetype
+	*/
 	int readName();
+	/*
+	Purpose:changes working directory to another directory in the current or to the parent directory
+	Input: position of start of current directory and string of directory name to search for
+	Calls: skipDir, skipFile
+	Called By: DiskManager.menu()
+	OutPut: A directory to make the new working directory
+	
+	*/
 	Directory cd(int pos, string search);
+	/*
+	Purpose: List all files and directories in the current directory
+	Input: position of start of current directory
+	Calls: skipDir, skipFile
+	Called By: DiskManager.menu()
+	OutPut: List of all current files and directories in the current directory
+	
+	*/
 	void ls(int pos);
+	/*
+	Purpose:opens a text file in the current directory and displays its contents
+	Input: position of start of current directory and string of directory name to search for
+	Calls: skipDir, skipFile
+	Called By: DiskManager.menu()
+	OutPut:contents of the text file
+	*/
 	void cat(int pos, string search);
+	
+	/*
+	****
+	Purpose:to search for a program file in the current directory determine if it exists
+	Input: position of start of current directory and string of directory name to search for
+	Calls: skipDir, skipFile
+	Called By: start(), step(), run()
+	OutPut:an int telling whether it exists or not
 	int searchProg(int pos, string seatch);
+	****
+	*/
+	
 	/*Purpose: to check if the file or Directory being created already exists, if so returns true, if not returns false
 	Input: a string to search for
 	output: a boolean
 	calls: skipfile, skipDirectory, checkExtensionR
 	*/
 	bool checkExists(string search, int dirPos);
+	
+	//place holder functions
 	void step(int pos, string seatch);
 	void run(int pos, string seatch);
 	void start(int pos, string seatch);
-	string copy(int dirPos);
 
 	//getters and setters
 	void setName(char* n);
