@@ -1,3 +1,9 @@
+/*
+Purpose: to manage and validate all interactions with the file system including searching, reading, and writing\
+	Also creates the file if it is not already in existence or opens it for reading/editing if it is
+	
+Programmer: Luke Martin
+*/
 #include <iostream>
 #include <fstream>
 #include "DiskManager.h"
@@ -706,6 +712,54 @@ using namespace std;
 		}
 		return 0;
 	}
+	/*Purpose: to check if the file or Directory being created already exists, if so returns true, if not returns false
+	Input: a string to search for
+	output: a boolean
+	calls: skipfile, skipDirectory, checkExtensionR
+	*/
+	
+	
+	bool DiskManager::checkExists(string search, int dirPos){
+		//seeks to end of current directory start tag
+		 file.seekg(dirPos+15, ios::beg);
+		char stringChar;
+		string fname = "";
+		//stores int representing filetype
+		int fileType = 0;
+		//reads in the next name in the file
+		for (int j =0; j<11; j++){
+			file.read((char*)&stringChar, sizeof(char));
+			fname = fname + stringChar;
+		}
+		//checks that names file type
+		fileType = checkExtensionR(fname);
+		//if its the end of the directory reads rest of it then returns to original function
+		if( fileType ==4) {
+			for (int j =0; j<3; j++){
+				file.read((char*)&stringChar, sizeof(char));
+				fname = fname + stringChar;
+				
+			}
+			 return false;
+		}
+		else if(fileType==1 || fileType==2) {
+			if(fname == search) {
+				return true;
+			}else {
+				skipFile(fileType);
+			}
+		}else {
+			if(fname ==search) {
+				return true;
+			}else {
+				skipDir();
+			}
+				
+		}
+		
+		return false;
+	}
+	
 	
 	/*
 	Purpose: place holder for step

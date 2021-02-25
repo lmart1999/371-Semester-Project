@@ -26,6 +26,7 @@ class UserInterface {
 		Maker make;
 		stack<Directory> *directories;
 		DiskManager *dm;
+		stack<Directory> list;
 
 	
 	public:
@@ -34,7 +35,22 @@ class UserInterface {
 	UserInterface(stack<Directory> &directories, DiskManager &dMan);
 	//Processes all commands and calls the relevant function or class needed to complete them
 	void menu();
-
+	/*
+	Purpose: obtains search parameter and either returns to previous directory or calls disk manager to search for a sub directory
+	Input: user inputted directory name
+	Output: none
+	Calledby: menu
+	calls: Directory, diskmanager, maker, directories
+	*/
+	void cd();
+	/*
+	Purpose: Print out the path of the current directory
+	Input: none
+	Output: full path of current directory
+	Calledby: menu
+	calls: Directory, directories, stack
+	*/
+	void pwd();
 };
 
 #endif

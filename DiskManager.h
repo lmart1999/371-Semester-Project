@@ -90,6 +90,12 @@ class DiskManager {
 	void ls(int pos);
 	void cat(int pos, string search);
 	int searchProg(int pos, string seatch);
+	/*Purpose: to check if the file or Directory being created already exists, if so returns true, if not returns false
+	Input: a string to search for
+	output: a boolean
+	calls: skipfile, skipDirectory, checkExtensionR
+	*/
+	bool checkExists(string search, int dirPos);
 	void step(int pos, string seatch);
 	void run(int pos, string seatch);
 	void start(int pos, string seatch);

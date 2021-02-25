@@ -27,52 +27,65 @@ using namespace std;
 	*/
 	void Maker::createFileName(int dirPos) {
 		//cout <<"Enter File Name: ";
-		std::string fileName;
-		cin >> fileName;
-	
-		//to keep track of extension and name character type validity
-		bool validExtension = false;
-		bool validChars = false;
+		bool exist = true;
 		int fileType;
-		//check to see if filename is within length requirements
-		while (fileName.length() >10 || validExtension == false || validChars == false) {
+		std::string fileName;
+
+		//ensures the creted fileName does not already exists
+		while (exist) {
+			cin >> fileName;
+	
+			//to keep track of extension and name character type validity
+			bool validExtension = false;
+			bool validChars = false;
+			
+			//check to see if filename is within length requirements
+			while (fileName.length() >10 || validExtension == false || validChars == false) {
 		
-			//forces user to choose a filename within the acceptable length
-			if(fileName.length()>10) {
-				cout <<"Invalid file name, File names should be no more than 8 characters with a one character . extension" << endl;
-				cout <<"Enter File Name: ";
-				cin >>fileName;
-				validExtension = false;		
-			}
-		
-		
-			//ensures it is a valid extension and sets the file type to be created, otherwise forces you to try again
-			if (validExtension != true) {
-				fileType = checkExtension(fileName);
-				if(fileType ==3) {
-					cout <<"Invalid Extension: Acceptable Extensions are .t and .p" << endl;
+				//forces user to choose a filename within the acceptable length
+				if(fileName.length()>10) {
+					cout <<"Invalid file name, File names should be no more than 8 characters with a one character . extension" << endl;
 					cout <<"Enter File Name: ";
 					cin >>fileName;
-				}else {
-					validExtension = true;
+					validExtension = false;		
 				}
-			}
-			//calls function to check if only letters and numbers are included in the file name
-			validChars = checkString(fileName);
-			//if the function says other things are in the name forces user to choose a new name
-			if(!validChars) {
-				cout <<"Invalid Character Types: Only Numbers and Letters are allowed in the Name" << endl;
-				cout <<"Enter File Name: ";
-				cin >>fileName;
-				validExtension= false;
-			}
+		
+		
+				//ensures it is a valid extension and sets the file type to be created, otherwise forces you to try again
+				if (validExtension != true) {
+					fileType = checkExtension(fileName);
+					if(fileType ==3) {
+						cout <<"Invalid Extension: Acceptable Extensions are .t and .p" << endl;
+						cout <<"Enter File Name: ";
+						cin >>fileName;
+					}else {
+						validExtension = true;
+					}
+				}
+				//calls function to check if only letters and numbers are included in the file name
+				validChars = checkString(fileName);
+				//if the function says other things are in the name forces user to choose a new name
+				if(!validChars) {
+					cout <<"Invalid Character Types: Only Numbers and Letters are allowed in the Name" << endl;
+					cout <<"Enter File Name: ";
+					cin >>fileName;
+					validExtension= false;
+				}
 			
 
 		
-		}
+			}
 		
-		//pads shorter filenames with null characters before the extension
-		fileName =namePadder(fileName);
+			//pads shorter filenames with null characters before the extension
+			fileName =namePadder(fileName);
+			//checks to see if the name already exists
+			if(dm->checkExists(fileName, dirPos)) {
+				cout<<"File Already exists. Please Enter A Different Name: " ;
+			}else {
+				exist = false;
+			
+			}
+		}
 		if(fileType==1) {
 			createTextFile(fileName, dirPos);
 		}else if (fileType==2) {
@@ -191,6 +204,7 @@ using namespace std;
 		//cout <<"Enter Directory Name: ";
 		std::string dirName; //holds the inputted directory name
 		cin >> dirName;
+		//will be putting  a directory exists check here
 		while (dirName == "root") {
 			cout << "directory name cannot be root\nEnter new Directory name: ";
 			cin >> dirName;
@@ -238,6 +252,12 @@ using namespace std;
 
 	Directory Maker::createDirectory(int dirPos) {
 		string dirName =createDirName();
+		
+		while(dm->checkExists(dirName, dirPos) == true){
+			cout <<"Directory already exists, please enter a different name: " ;
+			dirName=createDirName();
+		}
+		
 		Directory temp = Directory(dirName, 0, 0);
 		int curLoc = dm->writeDirectoryF(temp, dirPos);
 		temp.setMemLoc(curLoc);

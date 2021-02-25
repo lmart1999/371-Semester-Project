@@ -1,3 +1,10 @@
+/*
+Purpose: to manage user input and call the correct class or function based on inputted command, also validates the command
+Input: takes a stack of Directories containing the root as well as a Diskmanager reference in the constructor
+Calls: Directory, Program, Text, Maker, DiskManager
+Called by: RUSH
+Programmer: Luke Martin
+*/
 #include <stack>
 #include <iostream>
 #include <bits/stdc++.h>
@@ -14,7 +21,9 @@ using namespace std;
 	Maker make;
 	stack<Directory> *directories;
 	DiskManager *dMan;
+	stack<Directory> list;
 
+	
 	//primary constructor, called from main to create Text files and determine size
 	UserInterface::UserInterface(stack<Directory> &d, DiskManager &dd) {
 		directories = &d;
@@ -31,10 +40,9 @@ using namespace std;
 
 		//variable that will be used to temporarily hold input data before putting it into the file
 		string command;
-		stack<Directory> list;
 			//Intorduction to the Program
-		cout << "Welcome to RUFS. Enter one of the following commands: "<< endl;
-		cout << "CreateDir or CreateFile or EndDir or quit "<< endl;
+		cout << "Welcome to RUSH. Enter A Command "<< endl;
+		//cout << "mkdir or CreateFile or quit "<< endl;
 	
 		//Enter Commands
 		cout << "Command: " ;
@@ -70,19 +78,7 @@ using namespace std;
 				cout << "Directory Name: " << directories->top().getName() << endl;
 				dMan->ls(directories->top().getMemLoc());
 			}else if (command == "pwd") {
-				cout <<"Current Directory: ";
-				while (!directories->empty()){
-					Directory temp = directories->top();
-					directories->pop();
-					list.push(temp);
-				}
-				while (!list.empty()){
-					Directory temp = list.top();
-					list.pop();
-					directories->push(temp);
-					cout <<"/"<< temp.getName() ;
-				}
-				cout <<"\n";
+				pwd();
 			}else if (command == "cat") {
 				cin >>search;
 				search = make.namePadder(search);
@@ -98,22 +94,7 @@ using namespace std;
 				search = make.namePadder(search);
 				dMan->start(directories->top().getMemLoc(), search);
 			}else if (command == "cd") {
-				cin >>search;
-				if(search == "..") {
-					Directory temp = directories->top();
-					directories->pop();
-					if( directories->empty()) {
-						cout << "In root directory" << endl;
-						directories->push(temp);
-					}
-				}else {
-					search = search +".d";
-					search = make.namePadder(search);
-					Directory temp = dMan->cd(directories->top().getMemLoc(), search);
-					if(temp.getName() != "null") {
-						directories->push(temp);
-					}
-				}
+				cd();
 			}else if (command == "step") {
 				cin >>search;
 				search = make.namePadder(search);
@@ -133,6 +114,56 @@ using namespace std;
 		}
 		
 	}
+	/*
+	Purpose: obtains search parameter and either returns to previous directory or calls disk manager to search for a sub directory
+	Input: user inputted directory name
+	Output: none
+	Calledby: menu
+	calls: Directory, diskmanager, maker, directories
 	
+	*/
 	
+	void UserInterface::cd() {
+		string search;
+		cin >>search;
+		if(search == "..") {
+			Directory temp = directories->top();
+			directories->pop();
+			if( directories->empty()) {
+				cout << "In root directory" << endl;
+				directories->push(temp);
+			}
+		}else {
+			search = search +".d";
+			search = make.namePadder(search);
+			Directory temp = dMan->cd(directories->top().getMemLoc(), search);
+			if(temp.getName() != "null") {
+				directories->push(temp);
+			}
+		}
+		return;
+	}
+	/*
+	Purpose: Print out the path of the current directory
+	Input: none
+	Output: full path of current directory
+	Calledby: menu
+	calls: Directory, directories, stack
 	
+	*/
+	
+	void UserInterface::pwd() {
+		cout <<"Current Directory: ";
+		while (!directories->empty()){
+			Directory temp = directories->top();
+			directories->pop();
+			list.push(temp);
+		}
+		while (!list.empty()){
+			Directory temp = list.top();
+			list.pop();
+			directories->push(temp);
+			cout <<"/"<< temp.getName() ;
+		}
+		cout <<"\n";
+	}

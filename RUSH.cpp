@@ -1,21 +1,20 @@
 /*
-Purpose - takes a single binary file as an input and creates a file system oon it starting at 0
+Purpose - takes a single binary file as an input and creates a file system on it starting at 0, if file is not empty opens for editing instead
 	file names will have names of 8 characters, plus a one character . extension (ie .p) 
 	and be terminated with a null character, directorieswill be inputed only as up to 8 character names
 Output:A binary file holding all inputed files and directories along with their contents, will output this to the 
-	terminal along with their memory locations
+	terminal along with their memory locations if printinfo is entered
 Input: either user input responding to text prompts or a textfile of format discussed in the readme
 Basic Algorithm: creates file to write too
-	creates root directory and adds to stack, writes root directory with 0 for num of included objects
+	creates root directory and adds to stack, writes root directory with 0 for num of included objects and writes an end directory
 	user can create files and directores, when either is created the current directory is edited in the stack and
-	its number of included objects is increased
+	its number of included objects is increased as well as the number written to the file
 	creating a directory adds it to the stack and writes it to memory
 	creating a file simply writes it to memory
-	upon ending a directory the directory is removed from the stack and the memory location of its number of
-	objects is found in the binary file, this number is then overwritten with the final number of objects  and the
-	ENDdirName.d tag is written to the file with 14 characters instead of standard 11
-	upon quitting the program all directories are ended by popping everything off the stack
-	binary file is then read
+	cd .. removes the directory from the stack
+	users my freely navigate the binary file with the cd command which works by adding or removing the current directory from the stack
+	when a file or directory is created it is created immediatley after its current directories beggining tag, all contents after that are then copied
+	and the new file is written, all contents after that are then rewritten to the file after
 Programmer: Luke Martin
 */
 #include <stack>

@@ -1,10 +1,11 @@
-Createfile
-prog1.p
-2
-3
-mkdir
-first
-createfile
-test.t
-A
+ls
+mkdir test
+cd test
+pwd
+createfile test.t
+A test file
+ls
+cat test.t
+cd ..
+pwd
 quit
