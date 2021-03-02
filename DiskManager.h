@@ -73,7 +73,7 @@ class DiskManager {
 	input: text file, fstream pointer
 	called by: main
 	*/
-	void writeEndDirectoryF(Directory input, int dirPos);
+	void writeEndDirectoryF(Directory input, int dirPos, int start);
 	
 	/*
 	Purpose: to write the most recently created Program file to the binary file

@@ -156,7 +156,7 @@ using namespace std;
 	*/
 	
 	string DiskManager::copy(int dirPos){
-		int toRead; //variable to contain the number of cahracters needed to copy
+		int toRead; //variable to contain the number of characters needed to copy
 		file.seekg(0,ios::end); //finds end of file
 		//cout <<file.tellg();
 		toRead = file.tellg()-(dirPos+15); //calculates number of characters stored after end of current directories first tag
@@ -179,18 +179,13 @@ using namespace std;
 	called by: writeDirectoryF
 	*/
 	
-	void DiskManager::writeEndDirectoryF(Directory input, int dirPos) {
-		string test = "root.d"; // to make sure a new root directory is  not created
+	void DiskManager::writeEndDirectoryF(Directory input, int dirPos, int start) {
+		//string test = "root.d"; // to make sure a new root directory is  not created
 		string fileC = copy(dirPos);//holds all charcters read in as a string
-
-		//normalizes the length of test
-		while (test.length() <11) {
-			test.insert(test.length()-2, 1, '\0');
-		}
-		//only operates if the directory is not the root because there is nothing to copy yet if it is
-		if(input.getName() != test) {
-			copy(dirPos);
 		
+		//only operates if the directory is not the root because there is nothing to copy yet if it is
+		if(start!=0) {
+			copy(dirPos);
 			file.seekg((dirPos+15), ios::beg);
 		}
 		
@@ -206,7 +201,7 @@ using namespace std;
 		name = "END" + name; // adds END to beggining of Directory name
 		file.write(name.c_str(), 14); // writes file name to binary
 		//file.seekg(0,ios::end);
-		if(input.getName() != test) {
+		if(start !=0) {
 			file.write(fileC.c_str(), fileC.length());
 		}
 		
@@ -224,13 +219,18 @@ using namespace std;
 	int DiskManager::writeDirectoryF(Directory input, int dirPos) {
 		string test = "root.d"; //to ensure not to remake the root directory
 		string fileC = ""; //will contain copied content
+		file.seekg(0, ios::end);
+		int end = file.tellg();
+		file.seekg(0, ios::beg);
+		int beg = file.tellg();
 		//normalizes test name
-		while (test.length() <11) {
+		/*while (test.length() <11) {
 			test.insert(test.length()-2, 1, '\0');
-		}
+		}*/
 		//copies all data after current directory unless root is being created
-		if(input.getName() != test) {
-		
+		if(end!=beg) {
+			
+			//cout <<dirPos << endl;
 			fileC = copy(dirPos); //copies all data
 			file.seekg((dirPos+11), ios::beg); //puts reader at number of objects in current directory
 			//updates objects in directory
@@ -249,12 +249,11 @@ using namespace std;
 		//int memLoc= input.getMemLoc();
 		file.write(name.c_str(), 11); // writes file name to binary
 		file.write((char*)&numObj, sizeof(numObj)); //writes number of Objecs to binary file
-		if(input.getName() != test) {
-
+		if(end!=beg) {
 			file.write(fileC.c_str(), fileC.length()); //rewrites all the copied files
 		}
 		
-		writeEndDirectoryF(input, curLoc);
+		writeEndDirectoryF(input, curLoc, (end-beg));
 		//file.write((char*)&memLoc, sizeof(memLoc)); //writes mem req to binary file
 		
 		return curLoc;
@@ -273,7 +272,8 @@ using namespace std;
 	
 	void DiskManager::reader(int curDir) {
 		
-		
+		file.seekg(0, ios::end);
+		int end = file.tellg();
 		file.seekg(0, ios::beg);
 		int numO = 0;
 	
@@ -343,8 +343,8 @@ using namespace std;
 				//char test;
 				//file.read((char*)&test, sizeof(test));			
 				//if (file.eof()) {
-				if (fname.substr(3,4)=="root") {
-					file.seekg(curDir,ios::beg);
+				if (end-file.tellg()<=1) {
+					file.seekg(0,ios::beg);
 					return;
 				}/*else{
 					file.seekg(-1, ios::cur);

@@ -149,7 +149,7 @@ using namespace std;
 	string Maker::namePadder(string name) {
 		//pads shorter Directory with null characters before the extension
 		while (name.length() <11) {
-		name.insert(name.length()-2, 1, '\0');
+			name.insert(name.length()-2, 1, '\0');
 		}
 		return name;
 	}
@@ -201,16 +201,16 @@ using namespace std;
 	calledby: createDirectory
 	*/
 	string Maker::createDirName() {
-		//cout <<"Enter Directory Name: ";
 		std::string dirName; //holds the inputted directory name
 		cin >> dirName;
-		//will be putting  a directory exists check here
+		
+		/*(
 		while (dirName == "root") {
 			cout << "directory name cannot be root\nEnter new Directory name: ";
 			cin >> dirName;
 
 		}
-		
+		*/
 		
 		dirName += ".d";
 		//to keep track of extension and name character type validity
@@ -240,7 +240,6 @@ using namespace std;
 		
 		//pads shorter Directory with null characters before the extension
 		dirName = namePadder(dirName);
-	
 		return dirName;
 	}
 	/*
@@ -252,7 +251,6 @@ using namespace std;
 
 	Directory Maker::createDirectory(int dirPos) {
 		string dirName =createDirName();
-		
 		while(dm->checkExists(dirName, dirPos) == true){
 			cout <<"Directory already exists, please enter a different name: " ;
 			dirName=createDirName();
@@ -260,6 +258,7 @@ using namespace std;
 		
 		Directory temp = Directory(dirName, 0, 0);
 		int curLoc = dm->writeDirectoryF(temp, dirPos);
+		//cout <<curLoc<<endl;
 		temp.setMemLoc(curLoc);
 		return temp;	
 	}

@@ -54,6 +54,7 @@ Command: quit
 The file operates with 11 commands
 -CreateFile - allows you to create a file of either .t or .p extension, .t accepts a further text input and .p accepts 2 integer inputs
 -mkDir - allows you to create a directory, directory names do not have extensions and are at max 8 characters in length, directories are automatically ended
+	**NOTE - A directory may not be named root
 -cd - allows you to change direcotries to another directory in the current one, use .. to return to parent directory, accepts directory name as input
 -ls - list files in current directory and tells you the directory name
 -pwd - prints path to current directory
