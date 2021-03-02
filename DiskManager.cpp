@@ -631,6 +631,7 @@ using namespace std;
 						file.read((char*)&stringChar, sizeof(char));
 						contents = contents + stringChar;
 					}
+					cout << "Text File Contents: " <<"\n";
 					cout << contents <<"\n";
 					return;
 				}else {
