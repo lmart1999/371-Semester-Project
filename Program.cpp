@@ -9,9 +9,17 @@ using namespace std;
 		name = n;
 		cpuReq = c;
 		memReq = m;
+		startIOTime = -1;
+		totalIOTime = -1;
 	}
 		
-		
+	Program::Program(string n, int c, int m, int s, int t) {
+		name = n;
+		cpuReq = c;
+		memReq = m;
+		startIOTime = s;
+		totalIOTime = t;
+	}
 		
 		
 	//getters and Setters
@@ -38,4 +46,24 @@ using namespace std;
 	int Program::getMemReq() {
 		return memReq;
 	}
+	void Program::setTotalIOTime(int t) {
+		totalIOTime=t;
+	}
 	
+	int Program::getTotalIOTime() {
+		return totalIOTime;
+	}
+	void Program::setStartIOTime(int s) {
+		startIOTime=s;
+	}
+	
+	int Program::getStartIOTime() {
+		return startIOTime;
+	}
+	void Program::setRunTime(int r) {
+		runTime=r;
+	}
+	
+	int Program::getRunTime() {
+		return runTime;
+	}

@@ -6,6 +6,7 @@ Called by: RUSH
 Programmer: Luke Martin
 */
 #include <stack>
+#include <queue>
 #include <iostream>
 #include <bits/stdc++.h>
 #include <string>
@@ -22,6 +23,8 @@ using namespace std;
 	stack<Directory> *directories;
 	DiskManager *dMan;
 	stack<Directory> list;
+	queue<Program> *programs;
+	int Systime = 0;
 
 	
 	//primary constructor, called from main to create Text files and determine size
@@ -29,6 +32,8 @@ using namespace std;
 		directories = &d;
 		make.setDiskManager(dd);
 		dMan = &dd;
+		queue<Program> temp;
+		programs = &temp;
 		menu();
 	}
 	
@@ -37,7 +42,10 @@ using namespace std;
 	void UserInterface::menu() {
 		//variable that will be used for all searchs
 		string search;
-
+		//variables for program simulation
+		int burst = -1;
+		int mem;
+		int stepamt;
 		//variable that will be used to temporarily hold input data before putting it into the file
 		string command;
 			//Intorduction to the Program
@@ -86,23 +94,39 @@ using namespace std;
 					
 					
 			}else if (command == "run") {
-				cin >>search;
-				search = make.namePadder(search);
-				dMan->run(directories->top().getMemLoc(), search);
+				cout << "Advancing the System until all jobs are finished" << endl;
+				
+				
 			}else if (command == "start") {
 				cin >>search;
 				search = make.namePadder(search);
-				dMan->start(directories->top().getMemLoc(), search);
+				programs->push(dMan->start(directories->top().getMemLoc(), search));
 			}else if (command == "cd") {
 				cd();
 			}else if (command == "step") {
 				cin >>search;
 				search = make.namePadder(search);
 				dMan->step(directories->top().getMemLoc(), search);
+			}else if (command == "setburst") {
+				
+				cin >>burst;
+				
+			}else if (command == "setmemory") {
+				
+				cin >> mem;
+				
+			}else if (command == "addprogram") {
+				
+				make.createProgFileName(directories->top().getMemLoc());
+				
+			}else if (command == "getmemory") {
+				
+				cout <<"System Memory = " << mem << endl;
+				
 			}else if (command == "printinfo") {
 				dMan->reader(directories->top().getMemLoc());
 			}else {
-				cout << "Invalid Command" << endl;
+				cout <<command << " Invalid Command" << endl;
 			}
 		
 			//Enter Commands
@@ -166,4 +190,37 @@ using namespace std;
 			cout <<"/"<< temp.getName() ;
 		}
 		cout <<"\n";
+	}
+	
+	/*
+	Purpose: to go through all current jobs and finish them in a round robin style based on burst time
+	intput: burst time
+	output: to console
+	called by: menu
+	
+	*/
+	
+	void UserInterface::run(int bt) {
+		int tr; //time remaining for current jobs
+		int mem; // memory requirements
+		int sIO; //start IO time
+		int tIO;//total IO time needed
+		int rt = 0; //current run time of the program
+		queue<Program> IO;
+		//loop to run until Queue is empty
+		while (!programs->empty()) {
+			cout << "Current Time <" << time << ">" << endl;
+
+			//increments jobs by burst time
+			for(int i = 0; i++; i<bt) {
+				sIO =programs->front().getStartIOTime();
+				if(sIO == rt) {
+					IO.push(programs->front());
+					programs->pop();
+				}
+			}
+			
+			
+		}
+		
 	}

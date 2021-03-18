@@ -142,9 +142,13 @@ using namespace std;
 		//cout << name<< endl;
 		int cpuReq = input.getCpuReq();
 		int memReq= input.getMemReq();
+		int sIO = input.getStartIOTime();
+		int tIO = input.getTotalIOTime();
 		file.write(name.c_str(), 11); // writes file name to binary
 		file.write((char*)&cpuReq, sizeof(cpuReq)); //writes cpuReq to binayr file
 		file.write((char*)&memReq, sizeof(memReq)); //writes mem req to binary file
+		file.write((char*)&sIO, sizeof(sIO)); //writes mem req to binary file
+		file.write((char*)&tIO, sizeof(tIO)); //writes mem req to binary file
 		file.write(fileC.c_str(), fileC.length());
 	}
 	
@@ -323,11 +327,20 @@ using namespace std;
 				cout << "	Filename:"<< fname << endl;
 				int cReq = 0;
 				int mReq = 0;
+				int sIO = 0;
+				int tIO = 0;
 				cout << "	Type: Program" << endl;
 				cout<< file.tellg() << ": " ; //tells current memory location
-				file.read((char*)&cReq, sizeof(cReq)); // reads in CPU req of text file contents
-				file.read((char*)&mReq, sizeof(mReq)); // reads in memory req of text file contents
-				cout << " Contents: CPU Requirement:\t " << cReq << ", Memory Requirement " << mReq << endl; // prints out data of file
+				file.read((char*)&cReq, sizeof(cReq)); // reads in CPU req of program file contents
+				file.read((char*)&mReq, sizeof(mReq)); // reads in memory req of program file contents
+				file.read((char*)&sIO, sizeof(sIO)); // reads in start IO time of program file contents
+				file.read((char*)&tIO, sizeof(tIO)); // reads in Total IO time of program file contents	
+				
+				if(sIO <0){
+					cout << " Contents: CPU Requirement:\t " << cReq << ", Memory Requirement " << mReq << endl; // prints out data of file
+				}else {
+					cout << " Contents: CPU Requirement:\t " << cReq << ", Memory Requirement " << mReq << ", Start IO time " <<sIO << ", Total IO time " << tIO << endl; // prints out data of file
+				}
 		
 			}else if(fileType ==3) {
 				cout << "Directory:"<< fname << endl;
@@ -346,9 +359,7 @@ using namespace std;
 				if (end-file.tellg()<=1) {
 					file.seekg(0,ios::beg);
 					return;
-				}/*else{
-					file.seekg(-1, ios::cur);
-				}*/
+				}
 			
 			}
 		
@@ -445,7 +456,7 @@ using namespace std;
 			file.seekg(skip, ios::cur);
 			//of input file is type program skips 8 bytes, the size of 2 ints
 		}else {
-			file.seekg(8, ios::cur);
+			file.seekg(16, ios::cur);
 		}
 		
 	}
@@ -792,45 +803,34 @@ using namespace std;
 		}
 		
 	}
+	
 	/*
-	Purpose: place holder for step
+	Purpose: searches for a program and adds it to the running queue
 	Input: pos in file and name of program
-	Output: string to terminal
+	Output: The Program
 	called by: userInterface.menu()
 	calls: searchProg
+	
 	*/
-	void DiskManager::run(int pos, string search) {
+	Program DiskManager::start(int pos, string search) {
 		bool exists = checkExists(search, pos);
 		int check = checkExtensionR(search);
+		int cReq = 0;
+		int mReq = 0;
+		int sIO = 0;
+		int tIO = 0;
 		if (check!=2) {
 			cout<< "Invalid program name" <<endl;
-			return;
+			Program no("NULL", -1, -1, -1, -1);
+			return no;
 		}
 		if (exists == true) {
-			cout << "\tRunning Program:  "<< search<<endl;
-			
-		}else {
-			cout <<"Program "<<search <<" not found" <<endl;
-		}
-		
-		
-	}
-	/*
-	Purpose: place holder for step
-	Input: pos in file and name of program
-	Output: string to terminal
-	called by: userInterface.menu()
-	calls: searchProg
-	*/
-	void DiskManager::start(int pos, string search) {
-		bool exists = checkExists(search, pos);
-		int check = checkExtensionR(search);
-		if (check!=2) {
-			cout<< "Invalid program name" <<endl;
-			return;
-		}
-		if (exists == true) {
-			cout << "\tStarting Program: "<< search<<endl;
+			file.read((char*)&cReq, sizeof(cReq)); // reads in CPU req of program file contents
+			file.read((char*)&mReq, sizeof(mReq)); // reads in memory req of program file contents
+			file.read((char*)&sIO, sizeof(sIO)); // reads in start IO time of program file contents
+			file.read((char*)&tIO, sizeof(tIO)); // reads in Total IO time of program file contents			
+			Program st(search, cReq, mReq, sIO, tIO);
+			return st;
 		}else {
 			cout <<"Program "<<search <<" not found" <<endl;
 		}

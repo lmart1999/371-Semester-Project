@@ -161,8 +161,7 @@ class DiskManager {
 	
 	//place holder functions
 	void step(int pos, string seatch);
-	void run(int pos, string seatch);
-	void start(int pos, string seatch);
+	Program start(int pos, string seatch);
 
 	//getters and setters
 	void setName(char* n);
