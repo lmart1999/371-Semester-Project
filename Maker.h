@@ -29,7 +29,18 @@ class Maker {
 	
 	Maker();
 	
-		/*
+	
+	/*
+	Purpose: creates and normalizes a Program file Name
+	input: User inputted file name
+	output: none
+	calls: checkExtension, checkString, namePadder, createProgramFile, createTextFile
+	called by: main
+	*/
+	void createProgFileName(int dirPos);
+
+	
+	/*
 	Purpose: creates and normalizes a file Name and determines which filemaker to call
 	input: User inputted file name
 	output: none
@@ -75,7 +86,7 @@ class Maker {
 	calls: Program and writes the file to the binary file by calling writeProgramF
 
 	*/
-	void createProgramFile(string name, int dirPos );
+	//void createProgramFile(string name, int dirPos );
 
 	/*
 	*Purpose: to create and return a directory 

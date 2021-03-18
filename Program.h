@@ -18,12 +18,16 @@ class Program {
 	string name;
 	int cpuReq;
 	int memReq;
+	int startIOTime;
+	int totalIOTime;
+	int runTime;
 	
 	public:
 	
-	//full constructor
+	//partial constructor
 	Program(string n, int c , int m);
-	
+	//full constructor
+	Program(string n, int c , int m, int s, int t);
 
 	
 	//getters and setters
@@ -33,7 +37,12 @@ class Program {
 	int getCpuReq();
 	void setMemReq(int m);
 	int getMemReq();	
-		
+	void setTotalIOTime(int t);
+	int getTotalIOTime();
+	void setStartIOTime(int s);
+	int getStartIOTime();
+	void setRunTime(int r);
+	int getRunTime();
 		
 	
 };

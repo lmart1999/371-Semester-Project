@@ -16,7 +16,104 @@ using namespace std;
 	Maker::Maker() {
 	}
 	
+	/*
+	Purpose: creates and normalizes a Program file Name as well as calling the program class to create a program file and calling dm to write it
+	input: User inputted file name
+	output: none
+	calls: checkExtension, checkString, namePadder, Program, writeProgramF 
+	called by: main
+	*/
+	void Maker::createProgFileName(int dirPos) {
+		//cout <<"Enter File Name: ";
+		bool exist = true;
+		int fileType;
+		std::string progName;
+		int cpuReq = -1;
+		int memReq = -1;
+		int sIO = -1;
+		int tIO = -1;
+		//ensures the creted fileName does not already exists
+		while (exist) {
+			std::string line;
+			getline(cin, line);
+			istringstream iss(line);
+			string subs;
+			
+			if(iss) {			
+				iss >>progName;
+			}if(iss) {			
+				iss >>cpuReq;
+			}if(iss) {			
+				iss >>memReq;
+			}if(iss) {			
+				iss >>sIO;
+			}if(iss) {			
+				iss >>tIO;
+			}
+			
+			if(sIO <0 ||tIO <0) {
+				sIO = -1;
+				tIO = -1;
+			}
+			if(cpuReq <0) {
+				cout <<"Please enter a valid time requirement: ";
+				cin >> cpuReq;
+			}
+			if(memReq <0) {
+				cout <<"Please enter a valid memory requirement: ";
+				cin >> memReq;
+			}
+
+			//cout << progName <<" " << cpuReq <<" " << memReq <<" " << sIO<<" " << tIO <<endl;
+			
+			progName = progName +".p";
+			//to keep track of extension and name character type validity
+			//bool validExtension = true;
+			bool validChars = false;
+			
+			//check to see if filename is within length requirements
+			while (progName.length() >10 || validChars == false) {
+		
+				//forces user to choose a filename within the acceptable length
+				if(progName.length()>10) {
+					cout <<"Invalid file name, File names should be no more than 8 characters with a one character . extension" << endl;
+					cout <<"Enter File Name: ";
+					cin >>progName;
+					progName = progName +".p";
+				}
+
+				//calls function to check if only letters and numbers are included in the file name
+				validChars = checkString(progName);
+				//if the function says other things are in the name forces user to choose a new name
+				if(!validChars) {
+					cout <<"Invalid Character Types: Only Numbers and Letters are allowed in the Name" << endl;
+					cout <<"Enter Program Name: ";
+					cin >>progName;
+					progName = progName +".p";
+				}
+			
+
+		
+			}
+		
+			//pads shorter filenames with null characters before the extension
+			progName =namePadder(progName);
+			//checks to see if the name already exists
+			if(dm->checkExists(progName, dirPos)) {
+				cout<<"File Already exists. Please Enter A Different Name: " ;
+			}else {
+				exist = false;
+			
+			}
+		}
+		Program prog(progName, cpuReq, memReq, sIO, tIO);
+		dm->writeProgramF(prog,dirPos);
+		//createProgramFile(fileName, dirPos);
+		
 	
+		return;
+		
+	}
 	
 	/*
 	Purpose: creates and normalizes a file Name and determines which filemaker to call
@@ -54,8 +151,8 @@ using namespace std;
 				//ensures it is a valid extension and sets the file type to be created, otherwise forces you to try again
 				if (validExtension != true) {
 					fileType = checkExtension(fileName);
-					if(fileType ==3) {
-						cout <<"Invalid Extension: Acceptable Extensions are .t and .p" << endl;
+					if(fileType ==3 ||fileType==2) {
+						cout <<"Invalid Extension: Acceptable Extensions are .t" << endl;
 						cout <<"Enter File Name: ";
 						cin >>fileName;
 					}else {
@@ -88,8 +185,6 @@ using namespace std;
 		}
 		if(fileType==1) {
 			createTextFile(fileName, dirPos);
-		}else if (fileType==2) {
-			createProgramFile(fileName, dirPos);
 		}
 	
 		return;
@@ -109,9 +204,9 @@ using namespace std;
 	
 		if(extension ==".t") {
 			return 1;
-		}else if (extension==".p") {
+		}else if(extension==".p") {
 			return 2;
-		}else {
+		}else{
 			return 3;
 		}
 	}
@@ -182,6 +277,9 @@ using namespace std;
 	calls: Program and writes the file to the binary file by calling writeProgramF
 
 	*/
+	//****Not Used with Project 3 ****
+	
+	/*
 	void Maker::createProgramFile(string name, int dirPos) {
 		int cpuReq;
 		int memReq;
@@ -193,7 +291,7 @@ using namespace std;
 		dm->writeProgramF(prog, dirPos);
 		return;
 	}
-
+	*/
 	/*
 	Purpose: to recieve user input for a directory name and call functions to normalize it
 	input: n/a

@@ -27,6 +27,7 @@ class UserInterface {
 		stack<Directory> *directories;
 		DiskManager *dm;
 		stack<Directory> list;
+		queue<Program> *programs;
 
 	
 	public:
@@ -51,6 +52,8 @@ class UserInterface {
 	calls: Directory, directories, stack
 	*/
 	void pwd();
+	
+	void run(int bt);
 };
 
 #endif
