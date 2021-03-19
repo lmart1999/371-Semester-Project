@@ -20,7 +20,9 @@ class Program {
 	int memReq;
 	int startIOTime;
 	int totalIOTime;
-	int runTime;
+	int runTime = 0;
+	int finTime =0;
+
 	
 	public:
 	
@@ -43,6 +45,8 @@ class Program {
 	int getStartIOTime();
 	void setRunTime(int r);
 	int getRunTime();
+	void setFinTime(int t);
+	int getFinTime();
 		
 	
 };

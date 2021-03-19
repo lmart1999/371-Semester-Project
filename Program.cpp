@@ -67,3 +67,10 @@ using namespace std;
 	int Program::getRunTime() {
 		return runTime;
 	}
+	void Program::setFinTime(int f) {
+		finTime=f;
+	}
+	
+	int Program::getFinTime() {
+		return finTime;
+	}

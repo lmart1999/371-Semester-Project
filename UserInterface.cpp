@@ -24,7 +24,7 @@ using namespace std;
 	DiskManager *dMan;
 	stack<Directory> list;
 	queue<Program> *programs;
-	int Systime = 0;
+	int sysTime = 0;
 
 	
 	//primary constructor, called from main to create Text files and determine size
@@ -95,10 +95,15 @@ using namespace std;
 					
 			}else if (command == "run") {
 				cout << "Advancing the System until all jobs are finished" << endl;
-				
+				if(burst != -1) {
+					run(burst);
+				}else {
+					cout <<"You must set the burst time" <<endl;
+				}
 				
 			}else if (command == "start") {
 				cin >>search;
+				search = search +".p";
 				search = make.namePadder(search);
 				programs->push(dMan->start(directories->top().getMemLoc(), search));
 			}else if (command == "cd") {
@@ -201,26 +206,95 @@ using namespace std;
 	*/
 	
 	void UserInterface::run(int bt) {
-		int tr; //time remaining for current jobs
-		int mem; // memory requirements
+		int done; //flag to know when to exit for loop
 		int sIO; //start IO time
-		int tIO;//total IO time needed
-		int rt = 0; //current run time of the program
-		queue<Program> IO;
+		queue<Program> IO; // Queue For IO
+		queue<Program> finished;
 		//loop to run until Queue is empty
 		while (!programs->empty()) {
-			cout << "Current Time <" << time << ">" << endl;
-
-			//increments jobs by burst time
-			for(int i = 0; i++; i<bt) {
-				sIO =programs->front().getStartIOTime();
-				if(sIO == rt) {
-					IO.push(programs->front());
+			done = 0;
+			
+			cout << "\nCurrent Time <" << sysTime << ">" << endl;
+			cout <<"Running job " << programs->front().getName() << " has " << programs->front().getCpuReq() << " time left and is using "<< programs->front().getMemReq() << " memory resources." << endl;
+			cout <<"The queue is: ";
+			int counter = 1;
+			programs->push(programs->front());
+			programs->pop();
+			if((programs->size())!=1){
+				cout << endl;
+				while (counter < programs->size()) {
+					cout << "\tPosition " << counter << ": job " << programs->front().getName() << " has " << programs->front().getCpuReq() << " units left and is using "<< programs->front().getMemReq() << " memory resources." << endl;
+					programs->push(programs->front());
 					programs->pop();
+					counter++;
 				}
+			} else {
+				cout << "empty" << endl;
 			}
 			
 			
+			if(!finished.empty()) {
+				cout << "Finished Jobs are: "<< endl;
+				for (int j = 0; j <finished.size(); j++) {
+					cout << "\t" << finished.front().getName() << " " << finished.front().getRunTime() << " " << finished.front().getFinTime() << " " << endl;
+					finished.push(finished.front());
+					finished.pop();
+				}
+				
+			}
+			
+			
+			//increments jobs by burst time
+			for(int i = 0; i<bt;i++) {
+				
+				//cout << "\n\n" << programs->front().getName() << "\n\n";
+
+				
+				if(!IO.empty()) {
+					cout << "The process " << IO.front().getName() << " is obtaining IO and will be back in " << IO.front().getTotalIOTime() << " units" <<endl;
+					IO.front().setTotalIOTime(IO.front().getTotalIOTime() -1);
+					if(IO.front().getTotalIOTime() == 0) {
+						IO.front().setStartIOTime(-1);
+						programs->push(IO.front());
+						IO.pop();
+					}
+				}
+				if(programs->front().getStartIOTime() == programs->front().getRunTime()) {
+					IO.push(programs->front());
+					programs->pop();
+					i=bt;
+					done = -1;
+				}
+				if (done!=-1){
+					sysTime++;
+					programs->front().setCpuReq(programs->front().getCpuReq() -1);
+					programs->front().setRunTime(programs->front().getRunTime() +1);
+					if(programs->front().getCpuReq() == 0){
+						programs->front().setFinTime(sysTime);
+						finished.push(programs->front());
+						programs->pop();
+						i = bt+1;
+					}
+					
+				}
+					
+				
+			}
+			//programs->push(programs->front());
+			//programs->pop();
+			
 		}
 		
+		cout << "\nCurrent Time <" << sysTime << ">" << endl;
+		cout <<"The Queue: is empty" <<endl;
+		if(!finished.empty()) {
+			cout << "Finished Jobs are: "<< endl;
+			for (int j = 0; j <finished.size(); j++) {
+				cout << "\t" << finished.front().getName() << " " << finished.front().getRunTime() << " " << finished.front().getFinTime() << " " << endl;
+				finished.push(finished.front());
+				finished.pop();
+			}
+				
+		}
+		return;
 	}
