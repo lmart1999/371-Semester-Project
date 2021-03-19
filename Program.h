@@ -22,6 +22,7 @@ class Program {
 	int totalIOTime;
 	int runTime = 0;
 	int finTime =0;
+	int startTime = -1;
 
 	
 	public:
@@ -47,8 +48,8 @@ class Program {
 	int getRunTime();
 	void setFinTime(int t);
 	int getFinTime();
-		
-	
+	void setStartTime(int s);
+	int getStartTime();
 };
 
 #endif

@@ -74,3 +74,10 @@ using namespace std;
 	int Program::getFinTime() {
 		return finTime;
 	}
+	void Program::setStartTime(int s) {
+		startTime=s;
+	}
+	
+	int Program::getStartTime() {
+		return startTime;
+	}

@@ -160,7 +160,6 @@ class DiskManager {
 	bool checkExists(string search, int dirPos);
 	
 	//place holder functions
-	void step(int pos, string seatch);
 	Program start(int pos, string seatch);
 
 	//getters and setters

@@ -28,6 +28,7 @@ class UserInterface {
 		DiskManager *dm;
 		stack<Directory> list;
 		queue<Program> *programs;
+		queue<Program> *finished;
 
 	
 	public:
@@ -54,6 +55,15 @@ class UserInterface {
 	void pwd();
 	
 	void run(int bt);
+	
+	void step(int bt, int stepAmt);
+	
+	/*
+	Purpose: To display information about currently running and finished programs
+	input: none
+	called by: run, step
+	*/
+	void updateRun();
 };
 
 #endif

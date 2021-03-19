@@ -788,6 +788,8 @@ using namespace std;
 	called by: userInterface.menu()
 	calls: searchProg
 	*/
+	// *** REMOVED WITH PROJECT 3 ***
+	/*
 	void DiskManager::step(int pos, string search) {
 		bool exists = checkExists(search, pos);
 		int check = checkExtensionR(search);
@@ -803,7 +805,7 @@ using namespace std;
 		}
 		
 	}
-	
+	*/
 	/*
 	Purpose: searches for a program and adds it to the running queue
 	Input: pos in file and name of program

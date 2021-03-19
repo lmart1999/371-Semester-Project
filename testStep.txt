@@ -3,5 +3,5 @@ start first
 start second
 start third
 setburst 4
-run
+step 6
 quit
