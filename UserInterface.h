@@ -15,6 +15,7 @@ Called by: RUFS.cpp UserInterface
 #include "Program.h"
 #include "Directory.h"
 #include "Maker.h"
+#include "Simulator.h"
 #include "DiskManager.h"
 using namespace std;
 
@@ -27,8 +28,8 @@ class UserInterface {
 		stack<Directory> *directories;
 		DiskManager *dm;
 		stack<Directory> list;
-		queue<Program> *programs;
-		queue<Program> *finished;
+		//queue<Program> *programs;
+		//queue<Program> *finished;
 
 	
 	public:
@@ -54,16 +55,16 @@ class UserInterface {
 	*/
 	void pwd();
 	
-	void run(int bt);
+	//void run(int bt);
 	
-	void step(int bt, int stepAmt);
+	//void step(int bt, int stepAmt);
 	
 	/*
 	Purpose: To display information about currently running and finished programs
 	input: none
 	called by: run, step
 	*/
-	void updateRun();
+	//void updateRun();
 };
 
 #endif

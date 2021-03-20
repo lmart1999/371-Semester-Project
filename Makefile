@@ -1,5 +1,5 @@
-all: RUSH.o Text.o Program.o Directory.o DiskManager.o Maker.o UserInterface.o 
-	g++ -o RUSH Text.o Program.o Directory.o DiskManager.o Maker.o UserInterface.o RUSH.o 
+all: RUSH.o Text.o Program.o Directory.o Simulator.o DiskManager.o Maker.o UserInterface.o 
+	g++ -o RUSH Text.o Program.o Simulator.o Directory.o DiskManager.o Maker.o UserInterface.o RUSH.o 
 	make clean	
 RUSH.o: RUSH.cpp
 	g++ -c RUSH.cpp
@@ -9,6 +9,8 @@ Program.o: Program.cpp
 	g++ -c Program.cpp
 Directory.o: Directory.cpp
 	g++ -c Directory.cpp
+Simulator.o: Simulator.cpp
+	g++ -c Simulator.cpp
 DiskManager.o: DiskManager.cpp
 	g++ -c DiskManager.cpp
 Maker.o: Maker.cpp

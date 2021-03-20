@@ -25,6 +25,7 @@ Programmer: Luke Martin
 #include "Program.h"
 #include "Directory.h"
 #include "DiskManager.h"
+#include "Simulator.h"
 #include "UserInterface.h"
 
 using namespace std;

@@ -15,6 +15,7 @@ Programmer: Luke Martin
 #include "Directory.h"
 #include "DiskManager.h"
 #include "Maker.h"
+#include "Simulator.h"
 #include "UserInterface.h"
 using namespace std;
 
@@ -23,11 +24,7 @@ using namespace std;
 	stack<Directory> *directories;
 	DiskManager *dMan;
 	stack<Directory> list;
-	queue<Program> *programs;
-	queue<Program> *finished;
-	queue<Program> *IO;
-	int sysTime = 0;
-	int sysMem = 0;
+	Simulator *sim;
 
 	
 	//primary constructor, called from main to create Text files and determine size
@@ -35,13 +32,15 @@ using namespace std;
 		directories = &d;
 		make.setDiskManager(dd);
 		dMan = &dd;
+		
+		//No Idea why I had to do this and couldn't declare them in Simulator but gave me a segmentation error
 		queue<Program> temp;
-		programs = &temp;
 		queue<Program> temp2;
-		finished = &temp2;
 		queue<Program> temp3;
-		IO = &temp3;
+		Simulator s("sim", temp, temp2, temp3);
+		sim = &s;
 		menu();
+		
 	}
 	
 	
@@ -57,7 +56,6 @@ using namespace std;
 			//Intorduction to the Program
 		cout << "Welcome to RUSH. Enter A Command "<< endl;
 		//cout << "mkdir or CreateFile or quit "<< endl;
-	
 		//Enter Commands
 		cout << "Command: " ;
 		cin >> command;
@@ -102,39 +100,38 @@ using namespace std;
 			}else if (command == "run") {
 				if(burst != -1) {
 					cout << "Advancing the System until all jobs are finished" << endl;
-					run(burst);
+					sim->run(burst);
 				}else {
 					cout <<"You must set the burst time" <<endl;
 				}
 				
-			}else if (command == "start") {
+			}else if (command == "start") { //starts a program if memory is available
 				cin >>search;
 				search = search +".p";
 				search = make.namePadder(search);
 				Program temp = dMan->start(directories->top().getMemLoc(), search);
-				if(temp.getMemReq()>sysMem) {
-					cout <<"Not enough memory to run" <<endl;
-				} else {
-					sysMem = sysMem-temp.getMemReq();
-					programs->push(temp);
+				if(temp.getName()!="NULL" && temp.getCpuReq()!=-1) {
+					sim->addProg(temp);
 				}
+				
 			}else if (command == "cd") {
 				cd();
-			}else if (command == "step") {
+			}else if (command == "step") { //steps through the programs
 				cin >>stepAmt;
 				if(burst != -1) {
 					cout << "Advancing the System " << stepAmt << " units" << endl;
-					step(burst, stepAmt);
+					sim->step(burst, stepAmt);
 				}else {
 					cout <<"You must set the burst time" <<endl;
 				}
-			}else if (command == "setburst") {
+			}else if (command == "setburst") { //sets Burst Time
 				
 				cin >>burst;
 				
-			}else if (command == "setmemory") {
-				
-				cin >> sysMem;
+			}else if (command == "setmemory") { //sets system Memory
+				int mem;
+				cin >> mem;
+				sim->setSysMem(mem);
 				
 			}else if (command == "addprogram") {
 				
@@ -142,7 +139,7 @@ using namespace std;
 				
 			}else if (command == "getmemory") {
 				
-				cout <<"System Memory = " << sysMem << endl;
+				cout <<"System Memory = " << sim->getSysMem() << endl;
 				
 			}else if (command == "printinfo") {
 				dMan->reader(directories->top().getMemLoc());
@@ -213,205 +210,3 @@ using namespace std;
 		cout <<"\n";
 	}
 	
-	/*
-	Purpose: to go through all current jobs and finish them in a round robin style based on burst time
-	intput: burst time
-	output: to console
-	called by: menu
-	calls: update Run
-	
-	*/
-	
-	void UserInterface::run(int bt) {
-		int startTime = sysTime; //to keep track of total Time to Execute
-		int done; //flag to know when to exit for loop
-		int sIO; //start IO time
-		//loop to run until Queue is empty
-		while (!programs->empty() || !IO->empty()) {
-			done = 0;
-			
-			updateRun();
-			
-			
-			//increments jobs by burst time
-			for(int i = 0; i<bt;i++) {
-				
-				//cout << "\n\n" << programs->front().getName() << "\n\n";
-
-				
-				if(!IO->empty()) {
-					cout << "\tThe process " << IO->front().getName() << " is obtaining IO and will be back in " << IO->front().getTotalIOTime() << " units" <<endl;
-					IO->front().setTotalIOTime(IO->front().getTotalIOTime() -1);
-					if(programs->empty()) sysTime++;
-					if(IO->front().getTotalIOTime() == 0) {
-						IO->front().setStartIOTime(-1);
-						programs->push(IO->front());
-						IO->pop();
-					}
-				}
-				if(programs->front().getStartIOTime() == programs->front().getRunTime()) {
-					IO->push(programs->front());
-					programs->pop();
-					i=bt;
-					done = -1;
-				}
-				if (done!=-1){
-					sysTime++;
-					programs->front().setCpuReq(programs->front().getCpuReq() -1);
-					programs->front().setRunTime(programs->front().getRunTime() +1);
-					if(programs->front().getCpuReq() == 0){
-						programs->front().setFinTime(sysTime-startTime);
-						sysMem = sysMem+programs->front().getMemReq();
-						finished->push(programs->front());
-						programs->pop();
-						i = bt+1;
-					}
-					
-				}
-					
-				
-			}
-			
-			
-		}
-		updateRun();
-		return;
-	}
-	/*
-	Purpose: to go through all current jobs for a certain amount of time and finish them in a round robin style based on burst time
-	intput: burst time, step amount
-	output: to console
-	called by: menu
-	calls: update Run
-	
-	*/
-	
-	void UserInterface::step(int bt, int stepAmt) {
-		int startTime = sysTime; //to keep track of total Time to Execute
-		
-		int counter = 0;
-		if((programs->size())>=1){
-			while (counter < programs->size()) {
-				if(programs->front().getStartTime() == -1) {
-					programs->front().setStartTime(sysTime);
-				}
-				programs->push(programs->front());
-				programs->pop();
-				counter++;
-			}
-		}
-		
-		int done; //flag to know when to exit for loop
-		int sIO; //start IO time
-		//loop to run until Queue is empty
-		if((programs->empty() && IO->empty()) ) {
-			sysTime = sysTime +stepAmt;
-		}
-		
-		while (((!programs->empty() || !IO->empty()) )&& ((sysTime-startTime)<stepAmt)) {
-			done = 0;
-		
-			updateRun();
-			if(bt>(stepAmt-(sysTime-startTime))){
-				bt = stepAmt-(sysTime-startTime);
-			}
-			
-			//increments jobs by burst time
-			for(int i = 0; i<bt;i++) {
-				
-				//cout << "\n\n" << programs->front().getName() << "\n\n";
-
-				
-				if(!IO->empty()) {
-					cout << "\tThe process " << IO->front().getName() << " is obtaining IO and will be back in " << IO->front().getTotalIOTime() << " units" <<endl;
-					IO->front().setTotalIOTime(IO->front().getTotalIOTime() -1);
-					if(programs->empty()) sysTime++;
-					if(IO->front().getTotalIOTime() == 0) {
-						IO->front().setStartIOTime(-1);
-						programs->push(IO->front());
-						IO->pop();
-					}
-				}
-				if(programs->front().getStartIOTime() == programs->front().getRunTime()) {
-					IO->push(programs->front());
-					programs->pop();
-					i=bt;
-					done = -1;
-				}
-				if (done!=-1 &&(sysTime-startTime !=stepAmt)){
-					sysTime++;
-					programs->front().setCpuReq(programs->front().getCpuReq() -1);
-					programs->front().setRunTime(programs->front().getRunTime() +1);
-					if(programs->front().getCpuReq() == 0){
-						programs->front().setFinTime(sysTime-(programs->front().getStartTime()));
-						sysMem = sysMem+programs->front().getMemReq();
-						finished->push(programs->front());
-						programs->pop();
-						i = bt+1;
-					}
-					
-				}
-				if(sysTime-startTime ==stepAmt) {
-					i = bt;
-				}
-				
-			}
-			
-			
-		}
-		
-		if(sysTime-startTime <stepAmt) {
-			updateRun();
-			sysTime = sysTime+(stepAmt-(sysTime-startTime));
-		}
-		
-		updateRun();
-		return;
-	}
-	/*
-	Purpose: to Print infor about currently running, queued and finished jobs to the console
-	input: none
-	called by: run
-	calls: nothing
-	
-	*/
-	
-	
-	void UserInterface::updateRun() {
-		cout << "\nCurrent Time <" << sysTime << ">" << endl;
-		
-		if(programs->size()>0){
-		cout <<"Running job " << programs->front().getName() << " has " << programs->front().getCpuReq() << " time left and is using "<< programs->front().getMemReq() << " memory resources." << endl;
-		}else {
-			cout << "Running Job is empty" << endl;
-		}
-		cout <<"The queue is: ";
-		int counter = 1;
-		if(!programs->empty()){
-			programs->push(programs->front());
-			programs->pop();
-		}
-		if((programs->size())>1){
-			cout << endl;
-			while (counter < programs->size()) {
-				cout << "\tPosition " << counter << ": job " << programs->front().getName() << " has " << programs->front().getCpuReq() << " units left and is using "<< programs->front().getMemReq() << " memory resources." << endl;
-				programs->push(programs->front());
-				programs->pop();
-				counter++;
-			}
-		} else {
-			cout << "empty" << endl;
-		}
-		
-		
-		if(!finished->empty()) {
-			cout << "Finished Jobs are: "<< endl;
-			for (int j = 0; j <finished->size(); j++) {
-				cout << "\t" << finished->front().getName() << " " << finished->front().getRunTime() << " " << finished->front().getFinTime() << " " << endl;
-				finished->push(finished->front());
-				finished->pop();
-			}
-			
-		}
-		
-	}

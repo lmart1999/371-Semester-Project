@@ -835,6 +835,8 @@ using namespace std;
 			return st;
 		}else {
 			cout <<"Program "<<search <<" not found" <<endl;
+			Program no("NULL", -1, -1, -1, -1);
+			return no;
 		}
 		
 	}
