@@ -45,7 +45,7 @@ class Simulator {
 	output: to console
 	called by: step, run
 	*/
-	void IOup();
+	void IOup(int i);
 	/*
 	Purpose: to go through all current jobs for a certain amount of time and finish them in a round robin style based on burst time
 	intput: burst time, step amount

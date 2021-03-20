@@ -1,0 +1,9 @@
+setburst 4
+setmemory 4
+cd inner
+start write
+cd ..
+start second
+run
+quit
+

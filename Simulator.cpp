@@ -71,7 +71,7 @@ using namespace std;
 				
 				//if there is something in IO increments its IO time by one
 				if(!IO->empty()) {
-					IOup();
+					IOup(i);
 				}
 				//checks to see if a program needs to go to IO, if so sends it there and removes it from running queue
 				if(!programs->empty() && programs->front().getStartIOTime() == programs->front().getRunTime()) {
@@ -110,8 +110,8 @@ using namespace std;
 	called by: step, run
 	*/
 	
-	void Simulator::IOup() {
-		if(programs->empty()) {
+	void Simulator::IOup(int i) {
+		if(i!=0) {
 			cout << "\nCurrent Time <" << sysTime << ">" << endl;
 		}
 		cout << "\tThe process " << IO->front().getName() << " is obtaining IO and will be back in " << IO->front().getTotalIOTime() << " units" <<endl;
@@ -171,8 +171,8 @@ using namespace std;
 				
 				//if there is something in IO increments its IO time by one
 				if(!IO->empty()) {
-					IOup();
-	
+					IOup(i);
+					
 				}
 				//checks to see if a program needs to go to IO, if so sends it there and removes it from running queue
 				
