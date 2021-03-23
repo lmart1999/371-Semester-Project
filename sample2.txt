@@ -1,5 +1,0 @@
-createfile
-prog.p
-4
-1
-quit
