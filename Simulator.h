@@ -63,7 +63,10 @@ class Simulator {
 	*/
 	void updateRun();
 	
+	//adds a program to the running jobs if there is enough memory to support it, basically a setter
+
 	void addProg(Program p);
+	//getters and setters
 	void setSysMem(int s);
 	int getSysMem();
 

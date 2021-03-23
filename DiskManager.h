@@ -159,7 +159,11 @@ class DiskManager {
 	*/
 	bool checkExists(string search, int dirPos);
 	
-	//place holder functions
+	/*Locates and returns a Program stored in the file system to be added to the queue of running jobs
+	Input: a location and program name
+	Output: a program
+	called by: menu
+	*/
 	Program start(int pos, string seatch);
 
 	//getters and setters

@@ -94,8 +94,11 @@ using namespace std;
 					}
 					
 				}
-					
 				
+				if(i == bt-1) {
+					programs->push(programs->front());
+					programs->pop();
+				}				
 			}
 			
 			
@@ -180,7 +183,7 @@ using namespace std;
 					programs->front().setStartIOTime(-1);
 					IO->push(programs->front());
 					programs->pop();
-					i=bt;
+					i=bt+1;
 					done = -1;
 				}
 				//checks to see if a program was just sent to IO, if so skips this to reset bt before running
@@ -194,8 +197,11 @@ using namespace std;
 						finished->push(programs->front());
 						programs->pop();
 						i = bt+1;
-					}
-					
+					}	
+				}
+				if(i == bt-1) {
+					programs->push(programs->front());
+					programs->pop();
 				}
 				//ends the loop if reaches the end of the step amt
 				if(sysTime-startTime ==stepAmt) {
@@ -206,6 +212,7 @@ using namespace std;
 			
 			
 		}
+		//updates the system time based on remaining step amount
 		if((sysTime-startTime) < stepAmt) {
 			sysTime = sysTime+(stepAmt-(sysTime-startTime));
 			updateRun();
@@ -213,30 +220,31 @@ using namespace std;
 		
 		return;
 	}
-	/*
-	Purpose: to Print infor about currently running, queued and finished jobs to the console
-	input: none
-	called by: run
-	calls: nothing
 	
+	/*
+	Purpose: to Print info about currently running, queued and finished jobs to the console
+	input: none
+	called by: run, step
+	calls: nothing
 	*/
 	
 	
 	void Simulator::updateRun() {
-		cout << "\nCurrent Time <" << sysTime << ">" << endl;
+		cout << "\nCurrent Time <" << sysTime << ">" << endl; //prints current times
 		
-		if(programs->size()>0){
+		 
+		if(!programs->empty() && programs->size()>0){ //loops through programs the running job and how long its got left
 			cout <<"Running job " << programs->front().getName() << " has " << programs->front().getCpuReq() << " time left and is using "<< programs->front().getMemReq() << " memory resources." << endl;
 		}else {
 			cout << "Running Job is empty" << endl;
 		}
 			cout <<"The queue is: ";
 			int counter = 1;
-		if(!programs->empty()){
+		if(!programs->empty()){ //loops once through the program
 			programs->push(programs->front());
 			programs->pop();
 		}
-		if((programs->size())>1){
+		if(!programs->empty() &&(programs->size())>1){ //loops through the rest of the queued jobs displaying their position and remaining time
 			cout << endl;
 			while (counter < programs->size()) {
 				cout << "\tPosition " << counter << ": job " << programs->front().getName() << " has " << programs->front().getCpuReq() << " units left and is using "<< programs->front().getMemReq() << " memory resources." << endl;
@@ -249,7 +257,7 @@ using namespace std;
 		}
 		
 		
-		if(!finished->empty()) {
+		if(!finished->empty()) { //loops through the finished jobs displaying their CPU req and how long they actually took
 			cout << "Finished Jobs are: "<< endl;
 			for (int j = 0; j < finished->size(); j++) {
 				cout << "\t" << finished->front().getName() << " " << finished->front().getRunTime() << " " << finished->front().getFinTime() << " " << endl;

@@ -1,8 +1,8 @@
-all: RUSH.o Text.o Program.o Directory.o Simulator.o DiskManager.o Maker.o UserInterface.o 
-	g++ -o RUSH Text.o Program.o Simulator.o Directory.o DiskManager.o Maker.o UserInterface.o RUSH.o 
+all: RATCH.o Text.o Program.o Directory.o Simulator.o DiskManager.o Maker.o UserInterface.o 
+	g++ -o RATCH Text.o Program.o Simulator.o Directory.o DiskManager.o Maker.o UserInterface.o RATCH.o 
 	make clean	
-RUSH.o: RUSH.cpp
-	g++ -c RUSH.cpp
+RATCH.o: RATCH.cpp
+	g++ -c RATCH.cpp
 Text.o: Text.cpp
 	g++ -c Text.cpp
 Program.o: Program.cpp

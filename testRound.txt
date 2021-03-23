@@ -1,10 +1,11 @@
 setburst 4
-setmemory 4
+setmemory 8
 cd inner
-start write
+start long
 cd ..
 start first
 start second
+start third
 run
 quit
 
