@@ -103,10 +103,11 @@ using namespace std;
 				if(temp.getName()!="NULL" && temp.getCpuReq()!=-1) {
 					sim->addProg(temp);
 				}
-			}else if (command == "cd") {
+			}else if (command == "cd") { //calls CD function
 				cd();
 			}else if (command == "step") { //steps through the programs
 				cin >>stepAmt;
+				//ensures the burst time ahs been set
 				if(burst != -1) {
 					cout << "Advancing the System " << stepAmt << " units" << endl;
 					sim->step(burst, stepAmt);
@@ -115,7 +116,7 @@ using namespace std;
 				}
 			}else if (command == "setburst") { //sets Burst Time
 				cin >>burst;
-				while(burst<2) {
+				while(burst<2) {//ensures it is at least 2
 					cout <<"Burst size must be at least 2. Please enter a new burst size: ";
 					cin >> burst;
 				}
@@ -123,7 +124,7 @@ using namespace std;
 			}else if (command == "setmemory") { //sets system Memory
 				int mem; //temp variable that stores current sys mem to be outputted
 				cin >> mem;
-				while(mem<1) {
+				while(mem<1) {//ensures memory is positive
 					cout <<"Memory size must be at least 1. Please enter a new memory size: ";
 					cin >> mem;
 				}

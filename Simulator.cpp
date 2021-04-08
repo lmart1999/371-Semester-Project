@@ -113,13 +113,14 @@ using namespace std;
 						programs->push(programs->front());
 						programs->pop();
 					}	
+					//if the program is on disk begins the process of pulling it to memory
 				}else if(!programs->empty() && programs->front().getOnDisk() !=0){	
 					sysTime++;
 					if(programs->front().getOnDisk() ==2 && sysMem < programs->front().getMemReq()) {
-						clearSpace(programs->front());
+						clearSpace(programs->front()); //if there isnt enough memory for the program calls clear space to free up memory and virtualize programs
 					}
-					programs->front().setOnDisk(programs->front().getOnDisk()-1);
-					if(i == bt-1) {
+					programs->front().setOnDisk(programs->front().getOnDisk()-1);//adjusts amount of time needed to remove from disk
+					if(i == bt-1) {//if the burst time is finished cycles the queue
 						programs->push(programs->front());
 						programs->pop();
 					}
@@ -237,20 +238,15 @@ using namespace std;
 					}else {
 						bCount++;
 					}
-					//If the program to run is on disk
-					/*
-					Needs updating for if available memory needs to be allocated
-					
-					
-					*/
-					
+
+					//if the program is on disk begins the process of pulling it to memory
 				}else if(!programs->empty() && programs->front().getOnDisk() !=0){
 					sysTime++;
 					if(programs->front().getOnDisk() ==2 && sysMem < programs->front().getMemReq()) {
-						clearSpace(programs->front());
+						clearSpace(programs->front()); //if there isnt enough memory for the program calls clear space to free up memory and virtualize programs
 					}
-					programs->front().setOnDisk(programs->front().getOnDisk()-1);
-					if(i == bt-1&& bCount == btO) {
+					programs->front().setOnDisk(programs->front().getOnDisk()-1); //adjust the amount of time needed to transfer from memory
+					if(i == bt-1&& bCount == btO) {//if the burst time is finished cycles the queue
 						programs->push(programs->front());
 						programs->pop();
 						bCount =0; //resets executed burst time to 0
@@ -288,7 +284,7 @@ using namespace std;
 		cout << "\nCurrent Time <" << sysTime << ">" << endl; //prints current times
 		
 		 
-		if(!programs->empty() && programs->size()>0){ //loops through programs the running job and how long its got left
+		if(!programs->empty() && programs->size()>0){ //loops through programs the running job and how long its got left as well as whether its on disk or in memory
 			if(programs->front().getOnDisk()==0){
 				cout <<"Running job " << programs->front().getName() << " has " << programs->front().getCpuReq() << " time left and is using "<< programs->front().getMemReq() << " memory resources." << endl;
 			}else {
@@ -344,14 +340,19 @@ using namespace std;
 			cout <<"Program is to large to run on this system" << endl;
 		}
 	}
-	
+	/*
+	Purpose: to free memory in order to add a new program P by moving queued jobs to virtual memory
+	Input: a program
+	output: none
+	called by: add program
+	*/
 	void Simulator::virtualize(Program p) {
 		int counter = 1;
 		bool allocated = false;
-		if(!programs->empty()){ //loops once through the program
+		if(!programs->empty()){ //loops once through the program to ensure we don't add running job to memory
 			programs->push(programs->front());
 			programs->pop();
-		
+			//loops through the rest of the programs adding them to virtual memory until enough space is created to load the program to memory
 			while (counter < programs->size()) {
 				if(programs->front().getOnDisk() ==0 && allocated ==false){
 					programs->front().setOnDisk(2);
@@ -366,6 +367,7 @@ using namespace std;
 				counter++;
 			}
 		}
+		//if there was not enough space without moving the running job the file is loaded to virtual memory
 		if(allocated == false) {
 			p.setOnDisk(2);
 		}
@@ -375,7 +377,7 @@ using namespace std;
 	}
 	
 	/*
-	Purpose: to free memory when a program must go from the Queue to running and there is not enough memory for it
+	Purpose: to free memory when a program must go from the Queue to running and there is not enough memory for it, does this by moving queued jobs to Virtual memory
 	Input: The program about to run
 	Called by: step, run
 	
@@ -384,10 +386,10 @@ using namespace std;
 	void Simulator::clearSpace(Program p) {
 		int counter = 1;
 		bool allocated = false;
-		if(!programs->empty()){ //loops once through the program
+		if(!programs->empty()){ //loops once through the program to ensure we dont add the running job to VM
 			programs->push(programs->front());
 			programs->pop();
-		
+			//loops through rest of queued jobs until enough space is created to add the new program
 			while (counter < programs->size()) {
 				if(programs->front().getOnDisk() ==0 && allocated ==false){
 					programs->front().setOnDisk(2);
