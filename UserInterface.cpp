@@ -53,37 +53,30 @@ using namespace std;
 		int stepAmt; // variablle to control the amount the simulation advances
 		//variable that will be used to temporarily hold input data before putting it into the file
 		string command;
-			//Intorduction to the Program
-		cout << "Welcome to RUSH. Enter A Command "<< endl;
+			//Introduction to the Program
+		cout << "Welcome to RATCH. Enter A Command "<< endl;
 		//cout << "mkdir or CreateFile or quit "<< endl;
 		//Enter Commands
 		cout << "Command: " ;
 		cin >> command;
 		//changes command to all lowercase
 		transform(command.begin(), command.end(), command.begin(), ::tolower);
-		
 		//Loop that goes through the commands and calls functions to create files, directories, or quit the program
-	
 		while (command != "quit") {
 			//Executes the createDir command
 			if (command == "mkdir") {
-				
-				
 				//calls the create directoy file to make a new properly named and formatted directory object to add to the stack
 				Directory temp =make.createDirectory(directories->top().getMemLoc()); 
 				//adds new directory to the stack
 				//directories->push(temp);
 				//Executes the CreateFile command
 			}else if (command == "createfile") {
-				
 				make.createFileName(directories->top().getMemLoc()); //creates and writes a text or program file to the binary file
-			
 				//pulls top directory off, adds one to its num of programs and replaces it on the stack
 				Directory mod = directories->top();
 				mod.setNumObj(mod.getNumObj()+1);
 				directories->pop();
 				directories->push(mod);
-			
 			//Executes the EndDir Command
 			}else if (command == "ls") {
 				cout<<"\n";
@@ -94,9 +87,7 @@ using namespace std;
 			}else if (command == "cat") {
 				cin >>search;
 				search = make.namePadder(search);
-				dMan->cat(directories->top().getMemLoc(), search);
-					
-					
+				dMan->cat(directories->top().getMemLoc(), search);	
 			}else if (command == "run") {
 				if(burst != -1) {
 					cout << "Advancing the System until all jobs are finished" << endl;
@@ -104,7 +95,6 @@ using namespace std;
 				}else {
 					cout <<"You must set the burst time" <<endl;
 				}
-				
 			}else if (command == "start") { //starts a program if memory is available
 				cin >>search;
 				search = search +".p";
@@ -113,7 +103,6 @@ using namespace std;
 				if(temp.getName()!="NULL" && temp.getCpuReq()!=-1) {
 					sim->addProg(temp);
 				}
-				
 			}else if (command == "cd") {
 				cd();
 			}else if (command == "step") { //steps through the programs
@@ -125,36 +114,26 @@ using namespace std;
 					cout <<"You must set the burst time" <<endl;
 				}
 			}else if (command == "setburst") { //sets Burst Time
-				
 				cin >>burst;
-				
 			}else if (command == "setmemory") { //sets system Memory
-				int mem;
+				int mem; //temp variable that stores current sys mem to be outputted
 				cin >> mem;
 				sim->setSysMem(mem);
-				
-			}else if (command == "addprogram") {
-				
+			}else if (command == "addprogram") { //adds a program by calling createProgramFileName in maker
 				make.createProgFileName(directories->top().getMemLoc());
-				
-			}else if (command == "getmemory") {
-				
+			}else if (command == "getmemory") { //returns current amount of system memory
 				cout <<"System Memory = " << sim->getSysMem() << endl;
-				
-			}else if (command == "printinfo") {
+			}else if (command == "printinfo") { //prints all info about the file systme
 				dMan->reader(directories->top().getMemLoc());
 			}else {
 				cout <<command << " Invalid Command" << endl;
 			}
-		
 			//Enter Commands
 			cout << "Command: " ;
 			cin >> command;
 			//changes command to all lowercase
 			transform(command.begin(), command.end(), command.begin(), ::tolower);
-	
 		}
-		
 	}
 	/*
 	Purpose: obtains search parameter and either returns to previous directory or calls disk manager to search for a sub directory

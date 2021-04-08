@@ -30,6 +30,7 @@ using namespace std;
 		IO = &i;
 		sysTime = 0; //Holds overall system time
 		sysMem = 0; //holds overall system memory
+		bCount = 0; //holds amount of burst time that has been executed
 	}
 	
 	
@@ -58,6 +59,7 @@ using namespace std;
 				counter++; 
 			}
 		}
+		int btO = bt;//stores original input burst time
 		//loop to run until Queue is empty
 		while (!programs->empty() || !IO->empty()) {
 			//flag variable that lets the program know if a job went to IO
@@ -90,15 +92,19 @@ using namespace std;
 						sysMem = sysMem+programs->front().getMemReq();
 						finished->push(programs->front());
 						programs->pop();
+						bCount =0;
 						i = bt+1;
 					}
 					
 				}
 				
-				if(i == bt-1) {
+				if(i == bt-1&& bCount == btO-1) {
 					programs->push(programs->front());
 					programs->pop();
-				}				
+					bCount =0;
+				}else {
+					bCount++;
+				}			
 			}
 			
 			
@@ -157,7 +163,7 @@ using namespace std;
 		int done; //flag to know when to exit for loop
 		int sIO; //start IO time
 		//loop to run until Queue is empty
-		
+		int btO = bt;//stores original input burst time
 		//loop to run until Queue is empty
 		while (((!programs->empty() || !IO->empty()) )&& ((sysTime-startTime)<stepAmt)) {
 			done = 0;
@@ -196,12 +202,16 @@ using namespace std;
 						sysMem = sysMem+programs->front().getMemReq();
 						finished->push(programs->front());
 						programs->pop();
+						bCount =0;
 						i = bt+1;
 					}	
 				}
-				if(i == bt-1) {
+				if(i == bt-1&& bCount == btO-1) {
 					programs->push(programs->front());
 					programs->pop();
+					bCount =0;
+				}else {
+					bCount++;
 				}
 				//ends the loop if reaches the end of the step amt
 				if(sysTime-startTime ==stepAmt) {

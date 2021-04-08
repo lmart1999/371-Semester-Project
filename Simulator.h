@@ -24,6 +24,7 @@ class Simulator {
 		queue<Program> *IO; //queue to contain jobs in IO
 		int sysTime;
 		int sysMem;
+		int bCount;
 
 	
 	public:

@@ -75,7 +75,7 @@ Finished Jobs are:
 
 
 
-The file operates with 11 commands
+The file operates with these commands
 -CreateFile - allows you to create a file of either .t extension, .t accepts a further text input 
 -addprogram - allows you to create a program using either 2 or 4 integers of form "Addprogram cpuReq Memreq IOStartTime IOExecTime", if 3 are included the third will be discarded and any more than 4 will also be discarded, cpu and memory  requirement are required
 -mkDir - allows you to create a directory, directory names do not have extensions and are at max 8 characters in length, directories are automatically ended
@@ -87,8 +87,8 @@ The file operates with 11 commands
 -setburst - sets the burst size for the round robin style queue of running jobs
 -setmemory - sets avaible memory for jobs to use while running
 -getmemory - retrieves the current system memory
-- Step - advances the system x number of units - if the number of units to advance is larger than the set burst time it uses the set burst time if it is less it treats this lower number as the burst time. EX - if the burst time = 4 and you step 2, for that step the BT will be 2 but if you step 1- it will be 4 with the final burst being only 2
-run- advances the system until all jobs are finished
+-Step - advances the system x number of units - if the number of units to advance is larger than the set burst time it uses the set burst time if it is less it treats this lower number as the burst time. EX - if the burst time = 4 and you step 2, for that step the BT will be 2 but if you step 1- it will be 4 with the final burst being only 2
+-run- advances the system until all jobs are finished
 -printinfo, prints list of all directories, files, and programs along with their contents and memory locations
 -Quit - ends program
 
