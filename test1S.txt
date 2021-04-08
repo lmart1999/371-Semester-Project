@@ -1,0 +1,18 @@
+setmemory 2
+start first
+start second
+start third
+setburst 3
+step 1
+step 1
+step 1
+step 1
+step 1
+step 1
+step 1
+step 1
+step 1
+step 1
+step 1
+step 1
+quit

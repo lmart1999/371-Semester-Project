@@ -1,8 +1,8 @@
-all: RATCH.o Text.o Program.o Directory.o Simulator.o DiskManager.o Maker.o UserInterface.o 
-	g++ -o RATCH Text.o Program.o Simulator.o Directory.o DiskManager.o Maker.o UserInterface.o RATCH.o 
+all: RUIN.o Text.o Program.o Directory.o Simulator.o DiskManager.o Maker.o UserInterface.o 
+	g++ -o RUIN Text.o Program.o Simulator.o Directory.o DiskManager.o Maker.o UserInterface.o RUIN.o 
 	make clean	
-RATCH.o: RATCH.cpp
-	g++ -c RATCH.cpp
+RUIN.o: RUIN.cpp
+	g++ -c RUIN.cpp
 Text.o: Text.cpp
 	g++ -c Text.cpp
 Program.o: Program.cpp
@@ -20,3 +20,4 @@ UserInterface.o: DiskManager.o UserInterface.cpp
 
 clean:
 	rm *.o
+

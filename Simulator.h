@@ -24,6 +24,8 @@ class Simulator {
 		queue<Program> *IO; //queue to contain jobs in IO
 		int sysTime;
 		int sysMem;
+		int totalMem;
+		int bCount;
 
 	
 	public:
@@ -66,6 +68,12 @@ class Simulator {
 	//adds a program to the running jobs if there is enough memory to support it, basically a setter
 
 	void addProg(Program p);
+	
+	//Purpose: to manage which programs are in virtual memory upon starting a program
+	//Input: a program
+	
+	void virtualize(Program p);
+	void clearSpace(Program p);
 	//getters and setters
 	void setSysMem(int s);
 	int getSysMem();

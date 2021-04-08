@@ -11,6 +11,10 @@ using namespace std;
 		memReq = m;
 		startIOTime = -1;
 		totalIOTime = -1;
+		runTime = 0;
+		startTime = -1;
+		finTime = 0;
+		onDisk = 0;
 	}
 		
 	Program::Program(string n, int c, int m, int s, int t) {
@@ -19,6 +23,10 @@ using namespace std;
 		memReq = m;
 		startIOTime = s;
 		totalIOTime = t;
+		runTime = 0;
+		startTime = -1;
+		finTime = 0;
+		onDisk =0;
 	}
 		
 		
@@ -80,4 +88,11 @@ using namespace std;
 	
 	int Program::getStartTime() {
 		return startTime;
+	}
+	void Program::setOnDisk(int o) {
+		onDisk=o;
+	}
+	
+	int Program::getOnDisk() {
+		return onDisk;
 	}

@@ -29,7 +29,9 @@ using namespace std;
 		//queue<Program> temp3;
 		IO = &i;
 		sysTime = 0; //Holds overall system time
-		sysMem = 0; //holds overall system memory
+		sysMem = 0; //holds remaining system memory
+		bCount = 0; //holds amount of burst time that has been executed
+		totalMem=0; //holds total mem of the system
 	}
 	
 	
@@ -58,13 +60,20 @@ using namespace std;
 				counter++; 
 			}
 		}
+		
+		int btO = bt;//stores original input burst time
 		//loop to run until Queue is empty
 		while (!programs->empty() || !IO->empty()) {
 			//flag variable that lets the program know if a job went to IO
 			done = 0;
 			//prints out current stats
 			updateRun();
-			
+			if(bCount >0) {
+				bt = bt-bCount;
+				bCount =0;
+			}else {
+				bt = btO;
+			}
 			
 			//increments jobs by burst time
 			for(int i = 0; i<bt;i++) {
@@ -73,32 +82,50 @@ using namespace std;
 				if(!IO->empty()) {
 					IOup(i);
 				}
+				//checks to see if the program needs to be transferred from disk
+				if(!programs->empty() && programs->front().getOnDisk() ==0){
+
 				//checks to see if a program needs to go to IO, if so sends it there and removes it from running queue
-				if(!programs->empty() && programs->front().getStartIOTime() == programs->front().getRunTime()) {
-					IO->push(programs->front());
-					programs->pop();
-					i=bt;
-					done = -1;
-				}
-				//checks to see if a program was just sent to IO, if so skips this to reset bt before running
-				if (!programs->empty() && done!=-1){
-					sysTime++;
-					programs->front().setCpuReq(programs->front().getCpuReq() -1); //increments time needed
-					programs->front().setRunTime(programs->front().getRunTime() +1); //increments time run
-					if(programs->front().getCpuReq() == 0){ //if time needed is zero, sets the finishe time of the program, re-adds the memory used by the program to sysMem and moves the job to the finished queue, resets the loop/bt
-						programs->front().setFinTime(sysTime-(programs->front().getStartTime()));
-						sysMem = sysMem+programs->front().getMemReq();
-						finished->push(programs->front());
+					if(!programs->empty() && programs->front().getStartIOTime() == programs->front().getRunTime()) {
+						IO->push(programs->front());
 						programs->pop();
-						i = bt+1;
+						i=bt;
+						bCount = 0;
+						done = -1;
 					}
+					//checks to see if a program was just sent to IO, if so skips this to reset bt before running
+					if (!programs->empty() && done!=-1){
+						sysTime++;
+						programs->front().setCpuReq(programs->front().getCpuReq() -1); //increments time needed
+						programs->front().setRunTime(programs->front().getRunTime() +1); //increments time run
+						if(programs->front().getCpuReq() == 0){ //if time needed is zero, sets the finishe time of the program, re-adds the memory used by the program to sysMem and moves the job to the finished queue, resets the loop/bt
+							programs->front().setFinTime(sysTime-(programs->front().getStartTime()));
+							sysMem = sysMem+programs->front().getMemReq();
+							finished->push(programs->front());
+							programs->pop();
+							bCount =0;
+							i = bt+1;
+						}
 					
-				}
+					}
 				
-				if(i == bt-1) {
-					programs->push(programs->front());
-					programs->pop();
-				}				
+					if(i == bt-1) {
+						programs->push(programs->front());
+						programs->pop();
+					}	
+				}else if(!programs->empty() && programs->front().getOnDisk() !=0){	
+					sysTime++;
+					if(programs->front().getOnDisk() ==2 && sysMem < programs->front().getMemReq()) {
+						clearSpace(programs->front());
+					}
+					programs->front().setOnDisk(programs->front().getOnDisk()-1);
+					if(i == bt-1) {
+						programs->push(programs->front());
+						programs->pop();
+					}
+				}
+
+				
 			}
 			
 			
@@ -157,8 +184,10 @@ using namespace std;
 		int done; //flag to know when to exit for loop
 		int sIO; //start IO time
 		//loop to run until Queue is empty
-		
+		int btO = bt;//stores original input burst time
 		//loop to run until Queue is empty
+		
+		
 		while (((!programs->empty() || !IO->empty()) )&& ((sysTime-startTime)<stepAmt)) {
 			done = 0;
 		
@@ -178,31 +207,58 @@ using namespace std;
 					
 				}
 				//checks to see if a program needs to go to IO, if so sends it there and removes it from running queue
-				
-				if(!programs->empty() && programs->front().getStartIOTime() == programs->front().getRunTime()) {
-					programs->front().setStartIOTime(-1);
-					IO->push(programs->front());
-					programs->pop();
-					i=bt+1;
-					done = -1;
-				}
-				//checks to see if a program was just sent to IO, if so skips this to reset bt before running
-				if (!programs->empty() && done!=-1 &&(sysTime-startTime !=stepAmt)){
-					sysTime++;
-					programs->front().setCpuReq(programs->front().getCpuReq() -1); //increments time needed
-					programs->front().setRunTime(programs->front().getRunTime() +1); //increments time run
-					if(programs->front().getCpuReq() == 0){ //if time needed is zero, sets the finishe time of the program, re-adds the memory used by the program to sysMem and moves the job to the finished queue, resets the loop/bt
-						programs->front().setFinTime(sysTime-(programs->front().getStartTime()));
-						sysMem = sysMem+programs->front().getMemReq();
-						finished->push(programs->front());
+				if(!programs->empty() && programs->front().getOnDisk() ==0){
+					if(!programs->empty() && programs->front().getStartIOTime() == programs->front().getRunTime()) {
+						programs->front().setStartIOTime(-1);
+						IO->push(programs->front());
 						programs->pop();
-						i = bt+1;
-					}	
+						i=bt+1;
+						bCount = 0;
+						done = -1;
+					}
+					//checks to see if a program was just sent to IO, if so skips this to reset bt before running
+					if (!programs->empty() && done!=-1 &&(sysTime-startTime !=stepAmt)){
+						sysTime++;
+						programs->front().setCpuReq(programs->front().getCpuReq() -1); //increments time needed
+						programs->front().setRunTime(programs->front().getRunTime() +1); //increments time run
+						if(programs->front().getCpuReq() == 0){ //if time needed is zero, sets the finishe time of the program, re-adds the memory used by the program to sysMem and moves the job to the finished queue, resets the loop/bt
+							programs->front().setFinTime(sysTime-(programs->front().getStartTime()));
+							sysMem = sysMem+programs->front().getMemReq();
+							finished->push(programs->front());
+							programs->pop();
+							bCount =0;
+							i = bt+1;
+						}	
+					}
+					if(i == bt-1&& bCount == btO) {
+						programs->push(programs->front());
+						programs->pop();
+						bCount =0;
+					}else {
+						bCount++;
+					}
+					//If the program to run is on disk
+					/*
+					Needs updating for if available memory needs to be allocated
+					
+					
+					*/
+					
+				}else if(!programs->empty() && programs->front().getOnDisk() !=0){
+					sysTime++;
+					if(programs->front().getOnDisk() ==2 && sysMem < programs->front().getMemReq()) {
+						clearSpace(programs->front());
+					}
+					programs->front().setOnDisk(programs->front().getOnDisk()-1);
+					if(i == bt-1&& bCount == btO) {
+						programs->push(programs->front());
+						programs->pop();
+						bCount =0; //resets executed burst time to 0
+					}else {
+						bCount++;
+					}
 				}
-				if(i == bt-1) {
-					programs->push(programs->front());
-					programs->pop();
-				}
+				
 				//ends the loop if reaches the end of the step amt
 				if(sysTime-startTime ==stepAmt) {
 					i = bt;
@@ -214,10 +270,9 @@ using namespace std;
 		}
 		//updates the system time based on remaining step amount
 		if((sysTime-startTime) < stepAmt) {
-			sysTime = sysTime+(stepAmt-(sysTime-startTime));
 			updateRun();
+			sysTime = sysTime+(stepAmt-(sysTime-startTime));
 		}
-		
 		return;
 	}
 	
@@ -234,7 +289,11 @@ using namespace std;
 		
 		 
 		if(!programs->empty() && programs->size()>0){ //loops through programs the running job and how long its got left
-			cout <<"Running job " << programs->front().getName() << " has " << programs->front().getCpuReq() << " time left and is using "<< programs->front().getMemReq() << " memory resources." << endl;
+			if(programs->front().getOnDisk()==0){
+				cout <<"Running job " << programs->front().getName() << " has " << programs->front().getCpuReq() << " time left and is using "<< programs->front().getMemReq() << " memory resources." << endl;
+			}else {
+				cout <<"Running job " << programs->front().getName() << " has " << programs->front().getCpuReq() << " time left and is using "<< programs->front().getMemReq() << " resources on disk." << endl;
+			}
 		}else {
 			cout << "Running Job is empty" << endl;
 		}
@@ -247,7 +306,11 @@ using namespace std;
 		if(!programs->empty() &&(programs->size())>1){ //loops through the rest of the queued jobs displaying their position and remaining time
 			cout << endl;
 			while (counter < programs->size()) {
-				cout << "\tPosition " << counter << ": job " << programs->front().getName() << " has " << programs->front().getCpuReq() << " units left and is using "<< programs->front().getMemReq() << " memory resources." << endl;
+				if(programs->front().getOnDisk()==0){
+					cout << "\tPosition " << counter << ": job " << programs->front().getName() << " has " << programs->front().getCpuReq() << " units left and is using "<< programs->front().getMemReq() << " memory resources." << endl;
+				}else {
+					cout << "\tPosition " << counter << ": job " << programs->front().getName() << " has " << programs->front().getCpuReq() << " units left and is using "<< programs->front().getMemReq() << " resources on disk." << endl;
+				}
 				programs->push(programs->front());
 				programs->pop();
 				counter++;
@@ -270,17 +333,90 @@ using namespace std;
 	}
 	//adds a program to the running jobs if there is enough memory to support it
 	void Simulator::addProg(Program p) {
-		if(p.getMemReq()>sysMem) {
-			cout <<"Not enough memory to run" <<endl;
-		} else {
-			programs->push(p);
-			sysMem = sysMem-p.getMemReq();
+		if(p.getMemReq()<=totalMem){
+			if(p.getMemReq()>sysMem) {
+				virtualize(p);
+			} else {
+				programs->push(p);
+				sysMem = sysMem-p.getMemReq();
+			}
+		}else{
+			cout <<"Program is to large to run on this system" << endl;
 		}
 	}
 	
+	void Simulator::virtualize(Program p) {
+		int counter = 1;
+		bool allocated = false;
+		if(!programs->empty()){ //loops once through the program
+			programs->push(programs->front());
+			programs->pop();
+		
+			while (counter < programs->size()) {
+				if(programs->front().getOnDisk() ==0 && allocated ==false){
+					programs->front().setOnDisk(2);
+					sysMem = sysMem+programs->front().getMemReq();
+					if(p.getMemReq()<=sysMem) {
+						allocated =true;
+					}
+
+				}
+				programs->push(programs->front());
+				programs->pop();
+				counter++;
+			}
+		}
+		if(allocated == false) {
+			p.setOnDisk(2);
+		}
+		programs->push(p);
+		sysMem = sysMem-p.getMemReq();
+		return;
+	}
+	
+	/*
+	Purpose: to free memory when a program must go from the Queue to running and there is not enough memory for it
+	Input: The program about to run
+	Called by: step, run
+	
+	*/
+	
+	void Simulator::clearSpace(Program p) {
+		int counter = 1;
+		bool allocated = false;
+		if(!programs->empty()){ //loops once through the program
+			programs->push(programs->front());
+			programs->pop();
+		
+			while (counter < programs->size()) {
+				if(programs->front().getOnDisk() ==0 && allocated ==false){
+					programs->front().setOnDisk(2);
+					sysMem = sysMem+programs->front().getMemReq();
+					if(p.getMemReq()<=sysMem) {
+						allocated =true;
+					}
+
+				}
+				programs->push(programs->front());
+				programs->pop();
+				counter++;
+			}
+		}
+		//programs->push(p);
+		sysMem = sysMem-p.getMemReq();
+		return;
+	}
 	//getters/setters
 	void Simulator::setSysMem(int s) {
-		sysMem=s;
+		if(totalMem ==sysMem) {
+			sysMem=s;
+			totalMem=s;
+		}else {
+			sysMem = (s-totalMem) + sysMem;
+			totalMem=s;
+		}
+		
+		
 	}
 	
 	int Simulator::getSysMem() {

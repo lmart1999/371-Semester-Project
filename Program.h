@@ -20,9 +20,10 @@ class Program {
 	int memReq;
 	int startIOTime;
 	int totalIOTime;
-	int runTime = 0;
-	int finTime =0;
-	int startTime = -1;
+	int runTime;
+	int finTime;
+	int startTime;
+	int onDisk;
 
 	
 	public:
@@ -50,6 +51,8 @@ class Program {
 	int getFinTime();
 	void setStartTime(int s);
 	int getStartTime();
+	void setOnDisk(int o);
+	int getOnDisk();
 };
 
 #endif

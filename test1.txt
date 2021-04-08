@@ -1,7 +1,7 @@
-setmemory 3
+setmemory 2
 start first
 start second
 start third
-setburst 4
+setburst 3
 run
 quit
